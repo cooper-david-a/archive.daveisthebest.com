@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block headTag %}
+  <title>Dave is the best!!</title>
+  <link rel="stylesheet" href="{% static 'DaveIsTheBest/home.css' %}">
+  <script> let laugh = new Audio("{% static 'DaveIsTheBest/laugh.wav' %}")</script>
+{% endblock headTag %}
+
+{% block content %}
+  <header>
+    Dave Is The Best!!?
+  </header>
+
+  <div id="playground">
+    <img id="awesomePic" src="{% static 'DaveIsTheBest/DaveIsTheBest.jpg' %}" width="563px" height="620px" onclick="laugh.play()">
+  </div>
+
+
+{% endblock content %}

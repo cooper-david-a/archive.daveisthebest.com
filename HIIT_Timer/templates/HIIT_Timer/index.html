@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block headTag %}
+  <title>Worlds best HIIT timer</title>
+  <link rel="stylesheet" href="{% static 'HIIT_Timer/HIIT_Timer.css' %}">
+  <script src="{% static 'HIIT_Timer/HIIT_Timer.js' %}"></script>
+  <script>
+    data.bell = new Audio("{% static 'HIIT_Timer/Bell.wav' %}");
+    data.playImg = "{% static 'HIIT_Timer/play.png' %}";
+    data.pauseImg = "{% static 'HIIT_Timer/pause.png' %}";
+    data.stopImg = "{% static 'HIIT_Timer/stop.png' %}";
+    action_images.push("url({% static 'HIIT_Timer/PelvicThrust.gif' %})");
+  </script>
+{% endblock headTag %}
+
+{% block content %}
+  <div class="clearfix">
+
+    <div class="progress_bar">
+      <div id="progress">&nbsp;</div>
+    </div>
+
+    <div class="action_img">
+      <h1 id="message">Ready?</h1>
+    </div>
+
+    <section id="round_timer">
+      00:00.0
+    </section>
+    
+
+    <section class="controls">
+      <button  id="playPauseButton" onclick="playPause()"><img src="{% static 'HIIT_Timer/play.png' %}"/></button>
+      <button  id="stopButton" onclick="stop()"><img src="{% static 'HIIT_Timer/stop.png' %}"  /></button>
+    </section>
+    
+    <section class="clocks">
+      <div class="labels">
+        <p>Remaining <span id="remaining">00:00.0</span></p>
+        <p>Elapsed <span id="elapsed">00:00.0</span></p>
+      </div>
+    </section>
+    
+    <section class="schedule">
+      <div class="warmup_cooldown_box">
+        Warmup(s) <br>
+        <input type="number" id="warmup" value="60">
+        <br>
+        Cooldown(s) <br>
+        <input type="number" id="cooldown" value="60">
+      </div>
+
+      <div class="button_box">
+        <button onclick="addRow()">Add Row</button>
+        <button onclick="deleteRow()">Delete Row</button>
+        <button onclick="createTimer()">Create Timer</button>
+      </div>
+
+      <div class="grid-container">
+        <div class="grid-header">
+          Hard(s)
+        </div>
+        <div class="grid-header">
+          Easy(s)
+        </div>
+        <div class="grid-header">
+          Rounds
+        </div>
+        <div class="grid-item">            
+          <input type="number" name="hard_time" value="60">
+        </div>
+        <div class="grid-item">
+          <input type="number" name="easy_time" value="60">
+        </div>
+        <div class="grid-item">
+          <input type="number" name="rounds" value="5">
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>createTimer()</script>
+
+{% endblock content %}

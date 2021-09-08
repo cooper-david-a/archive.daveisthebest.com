@@ -1,0 +1,32 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+}
+
+table { 
+  border: solid black 2px;
+  margin-top: 5px;
+}
+
+th {
+  text-align: center;
+}
+
+td {
+  text-align: center;
+}
+
+input {
+  max-width: 70px;
+}
+
+select {
+  min-width: 80px;
+}
+
+option {
+  color: black;
+}

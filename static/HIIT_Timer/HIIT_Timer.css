@@ -1,0 +1,210 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+  padding: 10px;
+  min-width: 350px;
+}
+
+.clearfix{
+  border: solid 4px black;
+  margin-top: 4px;
+}
+
+.clearfix::after {
+  content: "";
+  clear: both;
+  display: table;
+}
+.progress_bar {
+  padding: 10px 0 10px 0;
+}
+
+#progress {
+  width: 0px;
+  font-size: 200%;
+  background-color: blue;
+  text-align: center;
+}
+
+.action_img {
+  float: left;
+  width: 30%;
+  min-height: 20vw;
+  text-align: center;
+  background-image: url(https://media.giphy.com/media/14n5Zi31QTEsla/giphy.gif);
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+
+.action_img h1 {
+  font-size: 6vw;
+  padding-top: 6.8vw;
+  padding-bottom: 6.8vw;
+  background-color: yellow;
+  margin: 0;
+  display: block;
+}
+
+#round_timer {
+  font-size: 18vw;
+  max-height: 30%;
+  width: 70%;  
+  text-align: center;
+  float: left;
+}
+
+.controls {
+  width: 20%;
+  float: left;
+  clear: both;
+}
+
+.controls button {
+  width: 100%;
+  display: block;    
+}
+
+.controls button img {
+  width: 100%;
+  background-size: contain;
+}
+
+.clocks {
+  width: 50%;
+  float: left;
+  margin-left: 15%;
+  font-size: 5vw;
+}
+
+.clocks p {
+  line-height: 1.5;
+  text-align: center;
+  max-width: 100%;
+  margin: 0;
+}
+
+.clocks span{
+  display: block;
+  background-color: black;
+  color: white;
+}
+
+.schedule {
+  float: left;
+  width: 100%; 
+  margin-top: 10px; 
+}
+
+.warmup_cooldown_box {
+  width: 100%;
+  padding: 10px;
+  float: left;
+  text-align: center;
+  font-size: 150%;
+}
+
+.warmup_cooldown_box input {
+  font-size: 8vw;
+  width: 100%;
+  text-align: center;
+}
+
+.button_box {
+  text-align: center;
+}
+
+.button_box button {
+  font-size: 100%;
+  width: 32%;
+  margin: auto;
+  padding: 12px;
+}
+
+.button_box button:hover {
+  background-color: red;
+}
+
+
+.grid-container{
+  display: grid;
+  grid-template-columns: auto auto auto;
+  text-align: center;
+  border: solid black 2px;
+}
+
+.grid-header{
+  background-color: lightgray;
+  font-size: 8vw;
+}
+
+.grid-item{
+  font-size: 8vw;  
+}
+
+.grid-item input {
+  font-size: 8vw;
+  width: 100%;
+  text-align: center;
+}
+
+@media only screen and (min-width: 600px) {
+/*  html {
+    max-width: 800px;
+  } */
+
+  .controls {
+    width: 15%;
+  }
+
+  .clocks {
+    width: 20%;
+    font-size: 30px;
+    margin-left: 5%;
+  }
+
+  .schedule {
+    width: 50%;
+    margin-left: 8%;
+  }
+
+  .warmup_cooldown_box input {
+    font-size: 30px;
+  }
+
+  .button_box button {
+    font-size: 150%;
+  }
+
+  .grid-header {
+    font-size: 20px;
+  }
+
+  .grid-item {
+    font-size: 20px;  
+  }
+
+  .grid-item input {
+    font-size: 30px;
+  }
+
+}
+
+@media only screen and (min-width: 800px) {
+  
+  .action_img {
+    min-height: 175px;
+  }
+  .action_img h1{
+    font-size: 50px;
+    padding-top: 60px;
+    padding-bottom: 60px;
+  }
+  #round_timer{
+    font-size: 150px;
+  }
+
+
+}

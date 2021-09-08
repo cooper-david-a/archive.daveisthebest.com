@@ -1,0 +1,107 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block headTag %} 
+  <title>Thermo Property Calculator</title>
+  <link rel="stylesheet" href="{% static 'ThermoPropertyCalculator/ThermoPropertyCalculator.css' %}">
+{% endblock headTag %}
+
+{% block content %}
+  <label for="fluid">Fluid:</label>
+  <select id="fluid">
+    <option value="Water">Water</option>
+    <option value="R134a">R134a</option>    
+  </select>
+    
+  <table>
+    <tr>
+      <th colspan="3">State 1</th>
+    </tr>
+    <tr>
+      <td>
+        <select id="in1Var" onchange="updateSecondInputVariables(); updateInputUnits();">
+          <option value="T" selected>T</option>
+          <option value="P">P</option>
+          <option value="D">D</option>
+          <option value="U">U</option>
+          <option value="H">H</option>
+          <option value="S">S</option>
+        </select>
+      </td>
+      <td>
+        <input id="in1Value" type="number">
+      </td>
+      <td>
+        <select id="in1Units">          
+        </select>
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <select id="in2Var" onchange="updateInputUnits();">
+          <option value="P" selected>P</option>
+          <option value="D">D</option>
+          <option value="U">U</option>
+          <option value="H">H</option>
+          <option value="S">S</option>
+        </select>
+      </td>
+      <td>
+        <input id="in2Value" type="number">
+      </td>
+      <td>
+        <select id="in2Units">
+        </select>
+      </td>
+    </tr>
+    <tr>
+      <th>Property</th>
+      <th>Value</th>
+      <th>Units</th>
+    </tr>
+
+    <tr>
+      <td>T</td>
+      <td id="outTValue"></td>
+      <td><select id="outTUnits">
+      </select></td>
+    </tr>
+    <tr>
+      <td>P</td>
+      <td id="outPValue"></td>
+      <td><select id="outPUnits">
+      </select></td>
+    </tr>
+    <tr>
+      <td>D</td>
+      <td id="outDValue"></td>
+      <td><select id="outDUnits">
+      </select></td>
+    </tr>
+    <tr>
+      <td>U</td>
+      <td id="outUValue"></td>
+      <td><select id="outUUnits">
+      </select></td>      
+    </tr>
+    <tr>
+      <td>H</td>
+      <td id="outHValue"></td>
+      <td><select id="outHUnits">
+      </select></td>      
+    </tr>
+    <tr>
+      <td>S</td>
+      <td id="outSValue"></td>
+      <td><select id="outSUnits">
+      </select></td>      
+    </tr>
+  </table>
+  
+  <button type="button" onclick="calculate()">Calculate</button>
+  
+  <script src="{% static 'ThermoPropertyCalculator/coolprop.js' %}"></script>
+  <script src="{% static 'ThermoPropertyCalculator/ThermoPropertyCalculator.js' %}"></script>
+  <script>initialize();</script>
+{% endblock content %}
