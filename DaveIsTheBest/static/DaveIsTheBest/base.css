@@ -6,7 +6,12 @@ body {
     font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
   }
 
-  nav {
+header {
+    text-align: center;
+    padding: 0;
+}
+
+nav {
     font-size: 25px;
     color: white;
     background-color: rgb(28, 148, 34, .8);    
@@ -81,38 +86,6 @@ nav .dropdown-button:hover .dropdown-content {
 nav #about {
     float: right;
     border-left: solid black 1px;
-}
-
-header {
-    text-align: center;
-    padding: 10px;
-}
-
-#playground{
-    height: 80vh;
-}
-
-#awesomePic {
-    height: 50%;
-    width: 25%;
-    object-fit: contain;
-    position: relative;
-    animation-name: awesome;
-    animation-duration: 4s;
-    animation-iteration-count: infinite;
-    animation-direction: alternate;
-    animation-timing-function: linear;
-    z-index: 0;
-    cursor: pointer;
-}
-
-@keyframes awesome {
-    0%  {left: 0%; top: 0%}
-    20% {left: 15%; top: 40%}
-    40% {left: 30%; top: 0%}
-    60% {left: 45%; top: 40%}
-    80% {left: 60%; top: 0%}
-    100% {left: 75%; top: 40%}
 }
 
 @media only screen and (max-width: 370px){

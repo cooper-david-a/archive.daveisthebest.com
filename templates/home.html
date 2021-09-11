@@ -1,14 +1,47 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block headTag %}
-  <title>Dave is the best!!</title>
+  <title>Dave is the best!?</title>
   <link rel="stylesheet" href="{% static 'DaveIsTheBest/home.css' %}">
   <script> let laugh = new Audio("{% static 'DaveIsTheBest/laugh.wav' %}")</script>
 {% endblock headTag %}
 
 {% block content %}
-
-  <div id="playground">
+  <div id="home_body">
+    <div id="home_discussion">
+      <h3>About the title</h3>
+      <p>I was pulling in the driveway with my two sons 
+        in the car.  My older boy had just started driving
+        and he asked me how I was able to pull straight in 
+        without having to back up.  "Because, Dave is the best!"
+         </p>
+      <h3>What is this all about?</h3>
+      <p>Really, I'm just having fun learning about web development.  
+      I started learning html and css in the spring of 2021 and started  
+      building this site a few months later to guide my learning.</p>
+      <p>At this point, I plan to build everything using pure html, css,
+        and django.  It's not easy but I think it will pay off in better
+        understanding.  Later, I'll look into css frameworks like bootstrap.</p>
+    </div>
+    <div id="home_todo">
+      <h3>Todo list</h3>
+      <ol>
+        <li>Improve page appearance</li>
+        <li>Add instructions/discussion to the existing apps</li>
+        <li>Add todo app to track todo list dynamically</li>
+        <li>Add comment app to save visitor comments</li>
+        <li>Add some "Interests" content
+          <ul>
+            <li>BJJ</li>
+            <li>Math</li>            
+          </ul>
+        </li>
+        <li>Add a tutorial for how I built this site and
+          what I've learned.</li>
+      </ol>
+    </div>
+  </div>
+  <div id="home_playground">
     <img id="awesomePic" src="{% static 'DaveIsTheBest/DaveIsTheBest.jpg' %}" width="563px" height="620px" onclick="laugh.play()">
   </div>
 
