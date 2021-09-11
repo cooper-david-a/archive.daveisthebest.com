@@ -7,12 +7,14 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="shortcut icon" type="image/png" href="{% static 'DaveIsTheBest/favicon.ico' %}"/>
-  <link rel="stylesheet" href="{% static 'DaveIsTheBest/navbar.css' %}" type="text/css" media="all">
   <link rel="stylesheet" href="{% static 'DaveIsTheBest/base.css' %}" type="text/css" media="all">
   {% block headTag %}
   {% endblock headTag %}
 </head>
 <body>
+	<header>
+		<h1>Dave is the best!!?</h1>
+	</header>
   <nav>
 		<ul>
 			<li><a href="{% url 'home' %}" title="Home">
