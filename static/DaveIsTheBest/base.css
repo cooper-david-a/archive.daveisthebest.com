@@ -6,6 +6,7 @@ body {
     font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
     margin: 0;
     padding: 8px;
+    min-width: 350px;
   }
 
 header {
@@ -99,7 +100,11 @@ nav #about {
         max-width: 30%;
     }
 
-    nav #about{
-        max-width: 25%;
+    nav .dropdown-content {
+        position: absolute;
+        top: 127px;
+        left: 8px;
+        width: 95%;
     }
+
 }
