@@ -1,21 +1,3 @@
-let data = {
-state: "stopped",
-timeArray: [],
-startTime: null,
-remaining: 0,
-roundTime: 0,
-elapsed: 0,
-holdOverTime: 0,
-roundIndex: 0,
-timer: null
-}
-
-let action_images = [
-  "url('https://media.giphy.com/media/14n5Zi31QTEsla/giphy.gif')",
-  "url('https://media.giphy.com/media/eiYaX9CKUl5jW/giphy.gif')",
-  "url('https://media.giphy.com/media/3oEduOnl5IHM5NRodO/giphy.gif')"
-]
-
 
 function addRow() {
     let grid = document.getElementsByClassName("grid-container")[0];
