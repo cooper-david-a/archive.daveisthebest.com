@@ -3,7 +3,6 @@
 {% block headTag %}
   <title>Worlds best HIIT timer</title>
   <link rel="stylesheet" href="{% static 'HIIT_Timer/HIIT_Timer.css' %}">
-  <script src="{% static 'HIIT_Timer/HIIT_Timer.js' %}"></script>
   <script>
     let data = {
     state: "stopped",
@@ -15,10 +14,10 @@
     holdOverTime: 0,
     roundIndex: 0,
     timer: null,
-    bell = new Audio("{% static 'HIIT_Timer/Bell.wav' %}"),
-    playImg = "{% static 'HIIT_Timer/play.png' %}",
-    pauseImg = "{% static 'HIIT_Timer/pause.png' %}",
-    stopImg = "{% static 'HIIT_Timer/stop.png' %}"
+    bell: new Audio("{% static 'HIIT_Timer/Bell.wav' %}"),
+    playImg: "{% static 'HIIT_Timer/play.png' %}",
+    pauseImg: "{% static 'HIIT_Timer/pause.png' %}",
+    stopImg: "{% static 'HIIT_Timer/stop.png' %}"
     }
 
     let action_images = [
@@ -27,8 +26,9 @@
       "url('https://media.giphy.com/media/3oEduOnl5IHM5NRodO/giphy.gif')",
       "url({% static 'HIIT_Timer/PelvicThrust.gif' %})"
     ]
-
   </script>
+  <script src="{% static 'HIIT_Timer/HIIT_Timer.js' %}"></script>
+
 {% endblock headTag %}
 
 {% block content %}
