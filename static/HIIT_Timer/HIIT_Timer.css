@@ -1,14 +1,16 @@
-.clearfix{
+.flex-container {
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: center;
+}
+
+.Timer{
   border: solid 4px black;
   margin-top: 4px;
+  margin-right: 10px;
   max-width: 770px;
 }
 
-.clearfix::after {
-  content: "";
-  clear: both;
-  display: table;
-}
 .progress_bar {
   padding: 10px 0 10px 0;
 }
@@ -139,6 +141,11 @@
   font-size: 8vw;
   width: 100%;
   text-align: center;
+}
+
+.HIIT_Timer_discussion {
+  flex: 1 0 300px;
+  padding: 10px;
 }
 
 @media only screen and (min-width: 600px) {
