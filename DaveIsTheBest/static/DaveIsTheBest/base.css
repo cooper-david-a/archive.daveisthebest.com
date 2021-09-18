@@ -9,6 +9,12 @@ body {
     min-width: 350px;
   }
 
+body::after {
+    content: "";
+    clear: both;
+    display: table;
+  }
+
 header {
     text-align: center;
     padding: 0;

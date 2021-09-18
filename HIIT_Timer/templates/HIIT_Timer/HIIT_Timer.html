@@ -1,0 +1,109 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block headTag %}
+  <title>Worlds best HIIT timer</title>
+  <link rel="stylesheet" href="{% static 'HIIT_Timer/HIIT_Timer.css' %}">
+  <script>
+    let data = {
+    state: "stopped",
+    timeArray: [],
+    startTime: null,
+    remaining: 0,
+    roundTime: 0,
+    elapsed: 0,
+    holdOverTime: 0,
+    roundIndex: 0,
+    timer: null,
+    bell: new Audio("{% static 'HIIT_Timer/Bell.wav' %}"),
+    playImg: "{% static 'HIIT_Timer/play.png' %}",
+    pauseImg: "{% static 'HIIT_Timer/pause.png' %}",
+    stopImg: "{% static 'HIIT_Timer/stop.png' %}"
+    }
+
+    let action_images = [
+      "url('https://media.giphy.com/media/14n5Zi31QTEsla/giphy.gif')",
+      "url('https://media.giphy.com/media/eiYaX9CKUl5jW/giphy.gif')",
+      "url('https://media.giphy.com/media/3oEduOnl5IHM5NRodO/giphy.gif')",
+      "url({% static 'HIIT_Timer/PelvicThrust.gif' %})"
+    ]
+  </script>
+  <script src="{% static 'HIIT_Timer/HIIT_Timer.js' %}"></script>
+
+{% endblock headTag %}
+
+{% block content %}
+  <div class="flex-container">
+    <section class="Timer">
+
+      <div class="progress_bar">
+        <div id="progress">&nbsp;</div>
+      </div>
+
+      <div class="action_img">
+        <h1 id="message">Ready?</h1>
+      </div>
+
+      <div id="round_timer">
+        00:00.0
+      </div>
+      
+
+      <div class="controls">
+        <button  id="playPauseButton" onclick="playPause()"><img src="{% static 'HIIT_Timer/play.png' %}"/></button>
+        <button  id="stopButton" onclick="stop()"><img src="{% static 'HIIT_Timer/stop.png' %}"  /></button>
+      </div>
+      
+      <div class="clocks">
+        <div class="labels">
+          <p>Remaining <span id="remaining">00:00.0</span></p>
+          <p>Elapsed <span id="elapsed">00:00.0</span></p>
+        </div>
+      </div>
+      
+      <div class="schedule">
+        <div class="warmup_cooldown_box">
+          Warmup(s) <br>
+          <input type="number" id="warmup" value="60">
+          <br>
+          Cooldown(s) <br>
+          <input type="number" id="cooldown" value="60">
+        </div>
+
+        <div class="button_box">
+          <button onclick="addRow()">Add Row</button>
+          <button onclick="deleteRow()">Delete Row</button>
+          <button onclick="createTimer()">Create Timer</button>
+        </div>
+
+        <div class="grid-container">
+          <div class="grid-header">
+            Hard(s)
+          </div>
+          <div class="grid-header">
+            Easy(s)
+          </div>
+          <div class="grid-header">
+            Rounds
+          </div>
+          <div class="grid-item">            
+            <input type="number" name="hard_time" value="60">
+          </div>
+          <div class="grid-item">
+            <input type="number" name="easy_time" value="60">
+          </div>
+          <div class="grid-item">
+            <input type="number" name="rounds" value="5">
+          </div>
+        </div>
+    </div>
+    </section>
+
+    <section id="HIIT_Timer_discussion">
+      <p>Discussion</p>
+    </section>
+    
+  </div>
+
+  <script>createTimer()</script>
+
+{% endblock content %}
