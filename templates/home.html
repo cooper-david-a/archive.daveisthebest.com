@@ -2,8 +2,8 @@
 {% load static %}
 {% block headTag %}
   <title>Dave is the best!?</title>
-  <link rel="stylesheet" href="{% static 'DaveIsTheBest/home.css' %}">
-  <script> let laugh = new Audio("{% static 'DaveIsTheBest/laugh.wav' %}")</script>
+  <link rel="stylesheet" href="{% static 'DaveIsTheBest_base/home.css' %}">
+  <script> let laugh = new Audio("{% static 'DaveIsTheBest_base/laugh.wav' %}")</script>
 {% endblock headTag %}
 
 {% block content %}
@@ -43,10 +43,10 @@
       {% endblock todo %}
       <!--<iframe src="{% url 'todo' %}">-->
     </div>
-    <img src={% static 'DaveIsTheBest/eclipse.jpg' %} width="1355px" height="330px">
+    <img src={% static 'DaveIsTheBest_base/eclipse.jpg' %} width="1355px" height="330px">
   </div>
   <div id="home_playground">
-    <img id="awesomePic" src="{% static 'DaveIsTheBest/DaveIsTheBest.jpg' %}" width="563px" height="620px" onclick="laugh.play()">
+    <img id="awesomePic" src="{% static 'DaveIsTheBest_base/DaveIsTheBest.jpg' %}" width="563px" height="620px" onclick="laugh.play()">
   </div>
 
 

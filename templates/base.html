@@ -6,8 +6,8 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="shortcut icon" type="image/png" href="{% static 'DaveIsTheBest/favicon.ico' %}"/>
-  <link rel="stylesheet" href="{% static 'DaveIsTheBest/base.css' %}" type="text/css" media="all">
+  <link rel="shortcut icon" type="image/png" href="{% static 'DaveIsTheBest_base/favicon.ico' %}"/>
+  <link rel="stylesheet" href="{% static 'DaveIsTheBest_base/base.css' %}" type="text/css" media="all">
   {% block headTag %}
   {% endblock headTag %}
 </head>
@@ -18,7 +18,7 @@
   <nav>
 		<ul>
 			<li><a href="{% url 'home' %}" title="Home">
-				<img src=" {% static 'DaveIsTheBest/icons8-home-64.png' %}" height="64px" width="64px" alt="Home">
+				<img src=" {% static 'DaveIsTheBest_base/icons8-home-64.png' %}" height="64px" width="64px" alt="Home">
 				</a>
 			</li>
 			<li class="dropdown-button" onclick="">Projects

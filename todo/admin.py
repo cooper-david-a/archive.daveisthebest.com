@@ -6,10 +6,10 @@ from .models import TodoList, TodoItem
 class TodoItemInline(admin.TabularInline):
   model = TodoItem
   extra = 0
-  fieldsets = [(None, {'fields':['name', 'priority','completed']})]
+  fieldsets = [(None, {'fields':['name', 'priority','complete']})]
 
 class TodoItemAdmin(admin.ModelAdmin):
-  list_display = ('name','priority','completed')
+  list_display = ('name','priority','complete')
 
 class TodoListAdmin(admin.ModelAdmin):
   fieldsets = [

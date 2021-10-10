@@ -23,7 +23,7 @@ class TodoItem(models.Model):
   name = models.CharField(max_length=200) 
   date_created = models.DateTimeField(default=datetime.datetime.now) 
   priority = models.IntegerField(choices=PRIORITY_CHOICES, default=2)
-  completed = models.BooleanField(default=False)
+  complete = models.BooleanField(default=False)
   date_completed = models.DateTimeField(blank=True,null=True)
   todo_list = models.ForeignKey(TodoList, on_delete=models.CASCADE)
   notes = models.TextField(blank=True)  
