@@ -1,0 +1,8 @@
+{% extends 'home.html' %}
+{% load static %}
+{% block todo %}  
+  {% for list in todo_lists %}
+    {{list.name}}<br>
+    {{list.todo_item.all}}
+  {% endfor %}
+{% endblock todo %}
