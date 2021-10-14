@@ -21,7 +21,7 @@ from DaveIsTheBest_base import views as base_views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('__debug__/',include(debug_toolbar.urls)),
-    path('', base_views.home,name='home'),
+    path('', include('DaveIsTheBest_base.urls')),
     path('HIIT_Timer/', include('HIIT_Timer.urls')),
     path('ThermoPropertyCalculator/', include('ThermoPropertyCalculator.urls')),
     path('todo/', include('todo.urls')),

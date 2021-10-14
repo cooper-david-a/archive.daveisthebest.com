@@ -26,28 +26,21 @@
     <div id="home_todo">
       <h3>Todo list</h3>
       <ol>
-        <li>Improve page appearance</li>
-        <li>Add instructions/discussion to the existing apps</li>
-        <li>Add todo app to track todo list dynamically</li>
-        <li>Add comment app to save visitor comments</li>
-        <li>Add some "Interests" content
-          <ul>
-            <li>BJJ</li>
-            <li>Math</li>            
-          </ul>
-        </li>
-        <li>Add a tutorial for how I built this site and
-          what I've learned.</li>
+        {% for todo_list in todo %}
+          {% if not todo_list.complete %}
+            <li>{{todo_list.name}}</li>
+              <ul>
+                {% for item in todo_list.todo_items %}
+                  <li><a href="{% url 'todo_detail' item.pk %}">{{item.name}}</a></li>
+                {% endfor %}
+              </ul>
+          {% endif %}
+        {% endfor %}
       </ol>
-      {% block todo %}
-      {% endblock todo %}
-      <!--<iframe src="{% url 'todo' %}">-->
     </div>
     <img src={% static 'DaveIsTheBest_base/eclipse.jpg' %} width="1355px" height="330px">
   </div>
   <div id="home_playground">
     <img id="awesomePic" src="{% static 'DaveIsTheBest_base/DaveIsTheBest.jpg' %}" width="563px" height="620px" onclick="laugh.play()">
   </div>
-
-
 {% endblock content %}

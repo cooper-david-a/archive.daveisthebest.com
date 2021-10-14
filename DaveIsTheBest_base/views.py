@@ -6,7 +6,7 @@ def home(request):
   
   todo = [{'name': todo_list.name,
             'complete': todo_list.complete,
-            'todo_items':[{'name':item.name, 'priority': item.priority, 'completed': item.complete} for item in todo_list.todoitem_set.all()]
+            'todo_items':[{'pk': item.pk, 'name':item.name, 'priority': item.priority, 'completed': item.complete} for item in todo_list.todoitem_set.all()]
            } for todo_list in queryset] 
 
   return render(request,'home.html',{'todo': todo})

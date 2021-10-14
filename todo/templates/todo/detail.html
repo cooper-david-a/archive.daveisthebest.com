@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+
+<h2>{{todoitem.name}}</h2>
+<p>Created: {{todoitem.date_created}}</p>
+<p>Completed: {{ todoitem.date_completed|default_if_none:"" }}</p>
+<p>Priority: {{todoitem.get_priority_display}}</p>
+<p>Notes: <br> {{todoitem.notes}} </p>
+
+{% endblock content %}
