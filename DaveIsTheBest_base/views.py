@@ -9,4 +9,4 @@ def home(request):
             'todo_items':[{'pk': item.pk, 'name':item.name, 'priority': item.priority, 'completed': item.complete} for item in todo_list.todoitem_set.all()]
            } for todo_list in queryset] 
 
-  return render(request,'home.html',{'todo': todo})
+  return render(request,'DaveIsTheBest_base/home.html',{'todo': todo})
