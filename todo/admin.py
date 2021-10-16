@@ -5,7 +5,8 @@ from .models import TodoList, TodoItem
 class TodoItemInline(admin.TabularInline):
   model = TodoItem
   extra = 0
-  fieldsets = [(None, {'fields':['name', 'priority','complete']})]
+  fieldsets = [(None, {'fields':['name', 'priority','complete', 'date_completed']})]
+  list_editable = ['complete', 'date_completed']
 
 @admin.register(TodoItem)
 class TodoItemAdmin(admin.ModelAdmin):
@@ -14,8 +15,8 @@ class TodoItemAdmin(admin.ModelAdmin):
   list_select_related = ['todo_list']
   search_fields = ['name']  
   fieldsets = [
-    (None, {'fields': ['name', 'priority', 'complete', 'date_completed']}),
-    ('Notes', {'fields': ['notes'], 'classes': ['collapse']})
+    (None, {'fields': ['name', 'priority', 'date_created', 'complete', 'date_completed']}),
+    ('Details', {'fields': ['todo_list', 'notes'], 'classes': ['collapse']})
   ]
 
   def todo_list_name(self,todo_item):
