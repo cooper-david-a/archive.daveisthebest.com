@@ -14,7 +14,7 @@ class TodoItemAdmin(admin.ModelAdmin):
   list_select_related = ['todo_list']
   search_fields = ['name']  
   fieldsets = [
-    (None, {'fields': ['name', 'priority', 'complete']}),
+    (None, {'fields': ['name', 'priority', 'complete', 'date_completed']}),
     ('Notes', {'fields': ['notes'], 'classes': ['collapse']})
   ]
 
