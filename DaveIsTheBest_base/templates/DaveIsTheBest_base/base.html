@@ -13,28 +13,27 @@
 </head>
 <body>
 	<header>
-		<h1>Dave is the best!?</h1>
+		<div id="header_expansion">
+			<div id="about_text">
+				{% block about_text %}
+				{% endblock about_text %}
+			</div>
+			<div id="contact_info">
+				<h3>Contact me</h3>
+				<a href="mailto:daveisthebest@protonmail.com">email</a>
+			</div>
+		</div>
+		<nav>
+			<a href="{% url 'home' %}" title="Home">
+				<strong>Home</strong>
+			</a>
+			<button id="header_expand_collapse_button" type="button" onclick="header_expand_collapse()">
+				<img src="{% static 'DaveIsTheBest_base/icons8-menu-24.png' %}" alt="About">			
+			</button>
+		</nav>
 	</header>
-  <nav>
-		<ul>
-			<li><a href="{% url 'home' %}" title="Home">
-				<img src=" {% static 'DaveIsTheBest_base/icons8-home-64.png' %}" height="64px" width="64px" alt="Home">
-				</a>
-			</li>
-			<li class="dropdown-button" onclick="">Projects
-				<div class="dropdown-content">
-				<a href="{% url 'HIIT_Timer' %}">Worlds best HIIT timer</a><br>
-				<a href="{% url 'ThermoPropertyCalculator' %}">Thermo property calculator</a>
-				</div>
-			</li>
-			<li class="dropdown-button" onclick="">Interests
-				<div class="dropdown-content">
-					<a href="#">Placeholder</a><br>
-				</div>
-			</li>
-		</ul>
-	</nav>
   {% block content %}
   {% endblock content %}
 </body>
+	  <script src="{% static 'DaveIsTheBest_base/base.js' %}"></script>
 </html>

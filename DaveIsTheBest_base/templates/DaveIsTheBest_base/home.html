@@ -6,22 +6,27 @@
   <script> let laugh = new Audio("{% static 'DaveIsTheBest_base/laugh.wav' %}")</script>
 {% endblock headTag %}
 
+
+{% block about_text %}
+  <h3>About the title</h3>
+  <p>I was pulling in the driveway with my two sons 
+    in the car.  My older boy had just started driving
+    and he asked me how I was able to pull straight in 
+    without having to back up.  "Because, Dave is the best!"
+      </p>
+  <h3>What is this all about?</h3>
+  <p>Really, I'm just having fun learning about web development.  
+  I started learning html and css in the spring of 2021 and started  
+  building this site a few months later to guide my learning.</p>
+  <p>At this point, I plan to build everything using pure html, css,
+    and django.  It's not easy but I think it will pay off in better
+    understanding.  Later, I'll look into css frameworks like bootstrap.</p>
+{% endblock about_text %}
+
 {% block content %}
   <div id="home_body">
     <div id="home_discussion">
-      <h3>About the title</h3>
-      <p>I was pulling in the driveway with my two sons 
-        in the car.  My older boy had just started driving
-        and he asked me how I was able to pull straight in 
-        without having to back up.  "Because, Dave is the best!"
-         </p>
-      <h3>What is this all about?</h3>
-      <p>Really, I'm just having fun learning about web development.  
-      I started learning html and css in the spring of 2021 and started  
-      building this site a few months later to guide my learning.</p>
-      <p>At this point, I plan to build everything using pure html, css,
-        and django.  It's not easy but I think it will pay off in better
-        understanding.  Later, I'll look into css frameworks like bootstrap.</p>
+      
     </div>
     <div id="home_todo">
       <h3>Todo list</h3>
