@@ -62,3 +62,20 @@ header nav a {
     height: 100%;
     width: 100%;
 }
+
+footer {
+    display: flex;
+    line-height: 33px;
+    background-color: #75808b;
+}
+
+#footer_content {
+    width: 75%
+}
+
+footer a {
+    width: 25%;
+    padding-left: 10px;
+    color: black;
+    text-decoration: none;
+}

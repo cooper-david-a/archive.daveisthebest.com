@@ -3,7 +3,6 @@
 {% block headTag %}
   <title>Dave is the best!?</title>
   <link rel="stylesheet" href="{% static 'DaveIsTheBest_base/home.css' %}">
-  <script> let laugh = new Audio("{% static 'DaveIsTheBest_base/laugh.wav' %}")</script>
 {% endblock headTag %}
 
 
@@ -24,28 +23,28 @@
 {% endblock about_text %}
 
 {% block content %}
-  <div id="home_body">
-    <div id="home_discussion">
-      
+  <div id="Home_content">
+    <h2>Projects</h2>
+    <div id="projects_container">
+      <a class="card" href={% url 'HIIT_Timer' %}>{% comment %} HIIT Timer {% endcomment %}
+        <div>
+          <img src={% static 'DaveIsTheBest_base/HIIT_Timer_card.png' %} alt="Worlds Best HIIT Timer">
+          <p>This is the best HIIT timer ever created.  If you disagree, tell me why.</p>
+        </div>
+      </a>
+      <a class="card" href={% url 'ThermoPropertyCalculator' %}>{% comment %} Thermo Property Calculator {% endcomment %}
+        <div>
+          <img src={% static 'DaveIsTheBest_base/ThermoPropertyCalculator_card.png' %} alt="Thermo Property Calculator">
+          <p>A thermodynamic property calculator currently set up for water/steam and R134a.</p>
+        </div>
+      </a>
+      <a class="card" href={% url 'todo' %}>{% comment %} todo list {% endcomment %}
+        <div>
+          <img src={% static 'DaveIsTheBest_base/todoList_card.png' %} alt="todo list">
+          <p>A simple todo list for the site.  This is the first thing I've done which interacts with a database.</p>
+        </div>
+      </a>
+
     </div>
-    <div id="home_todo">
-      <h3>Todo list</h3>
-      <ol>
-        {% for todo_list in todo %}
-          {% if not todo_list.complete %}
-            <li>{{todo_list.name}}</li>
-              <ul>
-                {% for item in todo_list.todo_items %}
-                  <li><a href="{% url 'todo_detail' item.pk %}">{{item.name}}</a></li>
-                {% endfor %}
-              </ul>
-          {% endif %}
-        {% endfor %}
-      </ol>
-    </div>
-    <img src={% static 'DaveIsTheBest_base/eclipse.jpg' %} width="1355px" height="330px">
-  </div>
-  <div id="home_playground">
-    <img id="awesomePic" src="{% static 'DaveIsTheBest_base/DaveIsTheBest.jpg' %}" width="563px" height="620px" onclick="laugh.play()">
   </div>
 {% endblock content %}

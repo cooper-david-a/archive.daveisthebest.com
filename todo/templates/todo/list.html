@@ -1,0 +1,16 @@
+{% extends 'DaveIsTheBest_base/base.html' %}
+{% load static %}
+{% block content %}
+  <ol>
+  {% for todo_list in todo %}
+    {% if not todo_list.complete %}
+      <li>{{todo_list.name}}</li>
+        <ul>
+          {% for item in todo_list.todo_items %}
+            <li><a href="{% url 'todo_detail' item.pk %}">{{item.name}}</a></li>
+          {% endfor %}
+        </ul>
+    {% endif %}
+  {% endfor %}
+</ol>
+{% endblock content %}
