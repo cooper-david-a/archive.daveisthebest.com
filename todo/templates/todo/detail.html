@@ -1,7 +1,7 @@
 {% extends 'DaveIsTheBest_base/base.html' %}
 {% load static %}
 {% block content %}
-
+<a href="{% url 'todo' %}">Back to list</a>
 <h2>{{todoitem.name}}</h2>
 <p>Created: {{todoitem.date_created}}</p>
 <p>Completed: {{ todoitem.date_completed|default_if_none:"" }}</p>
