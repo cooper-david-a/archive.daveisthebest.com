@@ -6,100 +6,122 @@
   <link rel="stylesheet" href="{% static 'ThermoPropertyCalculator/ThermoPropertyCalculator.css' %}">
 {% endblock headTag %}
 
+{% block about_text %}
+  <h3>Story</h3>
+  <p>I taught an introductory thermodynamics/fluid systems course at UAB for a few years.  Solving problems in the course typically required
+  access to the thermodynamic properties of substances.  Typically, during tests and quizzes, the properties were accessed by interpolating
+   hard copy tables.  As such, part of the course was dedicated to learning how to interpolate tabular information manually.  Although
+   I think it is a valuable skill, I don't think an intro to thermodynamics course is the best place to teach interpolation.  There are some 
+   other property calculators available online but I wanted to tailor this one specifically toward my course.  I intend to add the ability to 
+   compute multiple states and a plotting capability.  Let me know what you think.
+  </p>
+  <p>
+  This calculator is implemented using <a href='http://www.coolprop.org/' target='_blank'>coolprop</a>, an open-source thermodynamic property library.   
+  </p>
+{% endblock about_text %}
+
 {% block content %}
-  <label for="fluid">Fluid:</label>
-  <select id="fluid">
-    <option value="Water">Water</option>
-    <option value="R134a">R134a</option>    
-  </select>
-    
-  <table>
-    <tr>
-      <th colspan="3">State 1</th>
-    </tr>
-    <tr>
-      <td>
-        <select id="in1Var" onchange="updateSecondInputVariables(); updateInputUnits();">
-          <option value="T" selected>T</option>
-          <option value="P">P</option>
-          <option value="D">D</option>
-          <option value="U">U</option>
-          <option value="H">H</option>
-          <option value="S">S</option>
-        </select>
-      </td>
-      <td>
-        <input id="in1Value" type="number">
-      </td>
-      <td>
-        <select id="in1Units">          
-        </select>
-      </td>
-    </tr>
+  <div class="state_container">
+    <table>
+      <tr>
+        <th colspan="3" style="border-bottom: solid 2px">State 1</th>
+      </tr>
+      <tr>
+        <th colspan="3">
+          <label for="fluid">Fluid:</label>
+          <select id="fluid">
+            <option value="Water">Water</option>
+            <option value="R134a">R134a</option>    
+          </select>    
+        </th>
+      </tr>
+      <tr>
+        <td>
+          <select id="in1Var" onchange="updateSecondInputVariables(); updateInputUnits();">
+            <option value="T" selected>Temperature</option>
+            <option value="P">Pressure</option>
+            <option value="D">Density</option>
+            <option value="U">spec Energy</option>
+            <option value="H">spec Enthalpy</option>
+            <option value="S">spec Entropy</option>
+          </select>
+        </td>
+        <td>
+          <input id="in1Value" type="number">
+        </td>
+        <td>
+          <select id="in1Units">          
+          </select>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <select id="in2Var" onchange="updateInputUnits();">
+            <option value="P" selected>Pressure</option>
+            <option value="D">Density</option>
+            <option value="U">spec Energy</option>
+            <option value="H">spec Enthalpy</option>
+            <option value="S">spec Entropy</option>
+          </select>
+        </td>
+        <td>
+          <input id="in2Value" type="number">
+        </td>
+        <td>
+          <select id="in2Units">
+          </select>
+        </td>
+      </tr>
+      <tr>
+        <th>Property</th>
+        <th>Value</th>
+        <th>Units</th>
+      </tr>
 
-    <tr>
-      <td>
-        <select id="in2Var" onchange="updateInputUnits();">
-          <option value="P" selected>P</option>
-          <option value="D">D</option>
-          <option value="U">U</option>
-          <option value="H">H</option>
-          <option value="S">S</option>
-        </select>
-      </td>
-      <td>
-        <input id="in2Value" type="number">
-      </td>
-      <td>
-        <select id="in2Units">
-        </select>
-      </td>
-    </tr>
-    <tr>
-      <th>Property</th>
-      <th>Value</th>
-      <th>Units</th>
-    </tr>
-
-    <tr>
-      <td>T</td>
-      <td id="outTValue"></td>
-      <td><select id="outTUnits">
-      </select></td>
-    </tr>
-    <tr>
-      <td>P</td>
-      <td id="outPValue"></td>
-      <td><select id="outPUnits">
-      </select></td>
-    </tr>
-    <tr>
-      <td>D</td>
-      <td id="outDValue"></td>
-      <td><select id="outDUnits">
-      </select></td>
-    </tr>
-    <tr>
-      <td>U</td>
-      <td id="outUValue"></td>
-      <td><select id="outUUnits">
-      </select></td>      
-    </tr>
-    <tr>
-      <td>H</td>
-      <td id="outHValue"></td>
-      <td><select id="outHUnits">
-      </select></td>      
-    </tr>
-    <tr>
-      <td>S</td>
-      <td id="outSValue"></td>
-      <td><select id="outSUnits">
-      </select></td>      
-    </tr>
-  </table>
+      <tr>
+        <td>Temperature</td>
+        <td id="outTValue"></td>
+        <td><select id="outTUnits">
+        </select></td>
+      </tr>
+      <tr>
+        <td>Pressure</td>
+        <td id="outPValue"></td>
+        <td><select id="outPUnits">
+        </select></td>
+      </tr>
+      <tr>
+        <td>Density</td>
+        <td id="outDValue"></td>
+        <td><select id="outDUnits">
+        </select></td>
+      </tr>
+      <tr>
+        <td>spec Energy</td>
+        <td id="outUValue"></td>
+        <td><select id="outUUnits">
+        </select></td>      
+      </tr>
+      <tr>
+        <td>spec Enthalpy</td>
+        <td id="outHValue"></td>
+        <td><select id="outHUnits">
+        </select></td>      
+      </tr>
+      <tr>
+        <td>spec Entropy</td>
+        <td id="outSValue"></td>
+        <td><select id="outSUnits">
+        </select></td>      
+      </tr>
+      <tr>
+        <th colspan="3">
+          <button type="button" onclick="calculate()">Calculate</button>
+        </th>
+      </tr>
+    </table>
+  </div>
   
-  <button type="button" onclick="calculate()">Calculate</button>
   
   <script src="{% static 'ThermoPropertyCalculator/coolprop.js' %}"></script>
   <script src="{% static 'ThermoPropertyCalculator/ThermoPropertyCalculator.js' %}"></script>

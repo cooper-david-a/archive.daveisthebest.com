@@ -31,6 +31,15 @@
 
 {% endblock headTag %}
 
+{% block about_text %}
+  <h3>Story</h3>
+  <p>During the COVID pandemic, I started a new workout routine where the first half was
+    was pullups and pushups for a minute with a minute rest between sets and the second half
+    was two minute sets with two minute rests between.  I couldn't find such a timer on the web
+    so I made my own in python.  I converted it to Javascript for this app.
+  </p>
+{% endblock about_text %}
+
 {% block content %}
   <div class="flex-container">
     <section class="Timer">
@@ -120,12 +129,6 @@
           <li>Play/Pause: starts and pauses the timer</li>
           <li>Stop: stops the currently running timer and creates a new timer. </li>
         </ul>
-      </p>
-      <h3>Story:</h3>
-      <p>During the COVID pandemic, I started a new workout routine where the first half was
-        was pullups and pushups for a minute with a minute rest between sets and the second half
-        was two minute sets with two minute rests between.  I couldn't find such a timer on the web
-        so I made my own in python.  I converted it to Javascript for this app.
       </p>
     </section>
     

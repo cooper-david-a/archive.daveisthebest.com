@@ -41,10 +41,18 @@
       <a class="card" href="{% url 'todo' %}">{% comment %} todo list {% endcomment %}
         <div>
           <img src="{% static 'DaveIsTheBest_base/todolist_card.jpg' %}" alt="todo list">
-          <p>A simple todo list for the site.  This is the first thing I've done which interacts with a database.</p>
+          <p>A simple to-do list for the site.  This is the first thing I've done which interacts with a database.</p>
         </div>
-      </a>
-
+      </a>      
+    </div>
+    <h2>Interests</h2>
+    <div id="interests_container">
+      <a class="card" href="{% url 'HIIT_Timer' %}">{% comment %} HIIT Timer {% endcomment %}
+        <div>
+          <img src="{% static 'DaveIsTheBest_base/HIIT_Timer_card.png' %}" alt="Worlds Best HIIT Timer">
+          <p>This is the best HIIT timer ever created.  If you disagree, tell me why.</p>
+        </div>
+      </a>      
     </div>
   </div>
 {% endblock content %}
