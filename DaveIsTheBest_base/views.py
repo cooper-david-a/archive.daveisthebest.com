@@ -1,12 +1,7 @@
 from django.shortcuts import render
-from todo.models import TodoItem, TodoList
 
 def home(request):
-  queryset = TodoList.objects.prefetch_related('todoitem_set').all()
-  
-  todo = [{'name': todo_list.name,
-            'complete': todo_list.complete,
-            'todo_items':[{'pk': item.pk, 'name':item.name, 'priority': item.priority, 'completed': item.complete} for item in todo_list.todoitem_set.all()]
-           } for todo_list in queryset] 
+  return render(request,'DaveIsTheBest_base/home.html')
 
-  return render(request,'DaveIsTheBest_base/home.html',{'todo': todo})
+def BJJ(request):
+  return render(request,'DaveIsTheBest_base/BJJ.html')
