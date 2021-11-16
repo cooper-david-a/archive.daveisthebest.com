@@ -1,7 +1,25 @@
 {% extends 'DaveIsTheBest_base/base.html' %}
 {% load static %}
 
+{% block headTag %}
+  <link rel="stylesheet" href="{% static 'DaveIsTheBest_base/BJJ.css' %}">
+{% endblock headTag %}
+
+
+
 {% block content %}
-  <h2>BJJ</h2>
-  <p>Videos: <a href="https://odysee.com/@DaveCooper:8/AGF-Bham-2021:8" target='_blank'>AGF Bham July 2021</a>
+<div id="BJJ_content">
+<p>I started doing BJJ in 2019 and got hooked pretty quick.  I just have so
+much fun practicing.  In fact, it is common for me to burst into laughter during sparring,
+ usually when my partner hits some effortless sweep or something.</p>
+<p> BJJ has had quite an impact on my life.  I train almost exclusively in the mornings
+which is a great way to start a day.  I'm sure the exercise alone helps but fighting out of a rear naked choke
+sure helps to put things into perspective prior to facing a day at the office.
+</p>
+  <h3>Some of my competition footage</h3>
+  <p><a href="https://odysee.com/@DavesBJJStuff:f/IBJJF-Birmingham-11-23-19:a" target='_blank'>11-23-19 IBJJF Birmingham</a></p>
+  <p><a href="https://odysee.com/@DavesBJJStuff:f/PGF-Qualifier-1-2021:c" target="_blank">6-26-21 PGF Qualifier 1</a></p>
+  <p><a href="https://odysee.com/@DavesBJJStuff:f/AGF-Bham-2021:8" target='_blank'>7-17-21 AGF Birmingham July 2021</a></p>
+</div>
+
 {% endblock content %}

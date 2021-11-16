@@ -1,7 +1,6 @@
 {% extends 'DaveIsTheBest_base/base.html' %}
 {% load static %}
 {% block headTag %}
-  <title>Dave is the best!?</title>
   <link rel="stylesheet" href="{% static 'DaveIsTheBest_base/home.css' %}">
 {% endblock headTag %}
 
@@ -24,8 +23,8 @@
 
 {% block content %}
   <div id="Home_content">
-    <h2>Projects</h2>
-    <div id="projects_container">
+    <h2>Apps</h2>
+    <div id="apps_container">
       <a class="card" href="{% url 'HIIT_Timer' %}">{% comment %} HIIT Timer {% endcomment %}
         <div>
           <img src="{% static 'DaveIsTheBest_base/HIIT_Timer_card.png' %}" alt="Worlds Best HIIT Timer">
