@@ -1,7 +1,19 @@
-from django.shortcuts import render
+from django.views.generic import TemplateView, RedirectView
+from .forms import CommentForm
 
-def home(request):
-  return render(request,'DaveIsTheBest_base/home.html')
+class Home(TemplateView):
+    template_name = 'DaveIsTheBest_base/Home.html'
 
-def BJJ(request):
-  return render(request,'DaveIsTheBest_base/BJJ.html')
+class BJJ(TemplateView):
+    template_name = 'DaveIsTheBest_base/BJJ.html'
+
+class CommentFormView(RedirectView):
+    http_method_names = ['post']
+    def post(self, request, *args, **kwargs):
+        self.url = request.META['HTTP_REFERER']
+        form = CommentForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return self.get(request, *args, **kwargs)
+        else:
+            return self.get(request, *args, **kwargs)            

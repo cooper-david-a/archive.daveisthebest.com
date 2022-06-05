@@ -8,38 +8,50 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="shortcut icon" type="image/png" href="{% static 'DaveIsTheBest_base/favicon.ico' %}"/>
   <link rel="stylesheet" href="{% static 'DaveIsTheBest_base/base.css' %}" type="text/css" media="all">
-	<title>Dave Is The Best!?</title>
+    <title>Dave Is The Best!?</title>
   {% block headTag %}
   {% endblock headTag %}
 </head>
 <body>
-	<header>
-		<div id="header_expansion">
-			<div id="about_text">
-				{% block about_text %}
-				{% endblock about_text %}
-			</div>
-			<div id="contact_info">
-				<h3>Contact me</h3>
-				<a href="mailto:daveisthebest@protonmail.com">email</a>
-			</div>
-		</div>
-		<nav>
-			<a href="{% url 'home' %}" title="Home">
-				<strong>Home</strong>
-			</a>
-			<button id="header_expand_collapse_button" type="button" onclick="header_expand_collapse()">
-				<img src="{% static 'DaveIsTheBest_base/icons8-menu-24.png' %}" alt="About">			
-			</button>
-		</nav>
-	</header>
-  {% block content %}
-  {% endblock content %}
-	<footer>
-		<div id="footer_content">
-		</div>
-		<a href="#"><strong>Back to top</strong></a>
-	</footer>
+    <header>
+        <div id="header_expansion">
+            <div id="about_text">
+                {% block about_text %}
+                {% endblock about_text %}
+            </div>
+            <div id="contact_info">
+                <h3>Contact me</h3>
+                <a href="mailto:daveisthebest@protonmail.com">email</a>
+            </div>
+        </div>
+        <nav>
+            <a href="{% url 'home' %}" title="Home">
+                <strong>Home</strong>
+            </a>
+            <button id="header_expand_collapse_button" type="button" onclick="header_expand_collapse()">
+                <img src="{% static 'DaveIsTheBest_base/icons8-menu-24.png' %}" alt="About">			
+            </button>
+        </nav>
+    </header>
+    {% block content %}
+    {% endblock content %}
+    <div id="comments">
+        <h3>{{comments.count}} Comments</h3>
+        <form action="{% url 'comments' %}" method="post">
+            {% csrf_token %}
+            {{comment_form.as_p}}
+            <input type="submit" value="OK">
+        </form>
+        {% for comment in comments %}
+            {{comment.date_entered}}<br>
+            {{comment.commenter_name}}, {{comment.comment_text | linebreaks}}<br>
+        {% endfor %}
+    </div>
+    <footer>
+        <div id="footer_content">
+        </div>
+        <a href="#"><strong>Back to top</strong></a>
+    </footer>
 </body>
-	  <script src="{% static 'DaveIsTheBest_base/base.js' %}"></script>
+      <script src="{% static 'DaveIsTheBest_base/base.js' %}"></script>
 </html>

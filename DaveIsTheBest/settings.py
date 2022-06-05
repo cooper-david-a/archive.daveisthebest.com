@@ -77,6 +77,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'DaveIsTheBest_base.context_processors.comments_context_processor',
             ],
         },
     },
@@ -96,6 +97,7 @@ DATABASES = {
         'PASSWORD': parser.get('database','DATABASE_PASSWORD'),
         'HOST': parser.get('database','DATABASE_HOST'),
         'PORT': parser.getint('database','DATABASE_PORT'),
+        'init_command': "SET sql_mode='STRICT_TRANS_TABLES'"
     }
 }
 

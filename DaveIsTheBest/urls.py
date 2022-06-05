@@ -16,7 +16,6 @@ Including another URLconf
 import debug_toolbar
 from django.contrib import admin
 from django.urls import path, include
-from DaveIsTheBest_base import views as base_views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
