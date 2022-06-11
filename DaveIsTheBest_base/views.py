@@ -2,7 +2,7 @@ from django.views.generic import TemplateView, RedirectView
 from .forms import CommentForm
 
 class Home(TemplateView):
-    template_name = 'DaveIsTheBest_base/Home.html'
+    template_name = 'DaveIsTheBest_base/home.html'
 
 class BJJ(TemplateView):
     template_name = 'DaveIsTheBest_base/BJJ.html'
