@@ -143,11 +143,6 @@
   text-align: center;
 }
 
-.HIIT_Timer_discussion {
-  flex: 1 0 300px;
-  padding: 10px;
-}
-
 @media only screen and (min-width: 600px) {
 
   .controls {

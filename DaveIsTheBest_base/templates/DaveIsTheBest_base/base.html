@@ -1,4 +1,5 @@
 {% load static %}
+{% load humanize %}
 
 <!DOCTYPE html>
 <html lang="en-US">
@@ -35,17 +36,38 @@
     </header>
     {% block content %}
     {% endblock content %}
-    <div id="comments">
-        <h3>{{comments.count}} Comments</h3>
-        <form action="{% url 'comments' %}" method="post">
-            {% csrf_token %}
-            {{comment_form.as_p}}
-            <input type="submit" value="OK">
-        </form>
-        {% for comment in comments %}
-            {{comment.date_entered}}<br>
-            {{comment.commenter_name}}, {{comment.comment_text | linebreaks}}<br>
+    <h3>Comments</h3>
+    <div id="comments_container">
+        <div id="new_comment_form">
+            <form action="{% url 'comments' %}" method="post">
+                {% csrf_token %}
+                {{comment_form.as_p}}
+                <input type="submit" value="Post">
+            </form>
+        </div>        
+        <h4>{{comments|length}} Comments</h4>
+        {% for comment in comment_page_obj %}
+            <div id="existing_comment_card">
+                {% if comment.commenter_name %}
+                    <p>
+                        <em>{{comment.commenter_name}}</em>, {{comment.date_entered | naturaltime}}
+                    </p>
+                {% else %}
+                    <p>
+                        <em>Anonomous</em>, {{comment.date_entered | naturaltime}}
+                    </p>
+                {% endif %}
+                
+                <p class="comment_text">{{comment.comment_text}}</p>
+            </div>
         {% endfor %}
+        {% if comment_page_obj.has_previous %}
+        <a href="?comment_page={{ comment_page_obj.previous_page_number }}">previous</a>
+        {% endif %}
+        <p>Page {{ comment_page_obj.number }} of {{ comment_page_obj.paginator.num_pages }}</p>
+        {% if comment_page_obj.has_next %}
+            <a href="?comment_page={{ comment_page_obj.next_page_number }}">next</a>
+        {% endif %}
     </div>
     <footer>
         <div id="footer_content">

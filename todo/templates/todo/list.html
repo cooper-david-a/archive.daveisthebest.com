@@ -1,7 +1,7 @@
 {% extends 'DaveIsTheBest_base/base.html' %}
 {% load static %}
 {% block content %}
-  <ol>
+  <ol style="text-align:left;">
   {% for todolist in todolist_list %}
     {% if not todolist.complete %}
       <li>{{todolist.name}}</li>

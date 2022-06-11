@@ -1,24 +1,24 @@
-table { 
+.state_container table { 
   border: solid black 2px;
   margin: 15px;
 }
 
-th {
+.state_container th {
   text-align: center;
 }
 
-td {
+.state_container td {
   text-align: center;
 }
 
-input {
+.state_container input {
   max-width: 70px;
 }
 
-select {
+.state_container select {
   min-width: 80px;
 }
 
-option {
+.state_container option {
   color: black;
 }

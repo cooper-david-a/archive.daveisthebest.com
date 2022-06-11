@@ -10,3 +10,6 @@ class Comment(models.Model):
         null=True,
         blank=True)
     auto_positivity_rating = models.SmallIntegerField(null=True, blank=True)
+
+    class Meta:
+        ordering = ['date_entered']
