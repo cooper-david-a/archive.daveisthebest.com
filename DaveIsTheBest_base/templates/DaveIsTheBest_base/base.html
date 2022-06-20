@@ -45,19 +45,17 @@
                 <input type="submit" value="Post">
             </form>
         </div>        
-        <h4>{{comments|length}} Comments</h4>
+        <h4>{{comments_count}} Comments</h4>
         {% for comment in comment_page_obj %}
             <div id="existing_comment_card">
+                <p>
                 {% if comment.commenter_name %}
-                    <p>
-                        <em>{{comment.commenter_name}}</em>, {{comment.date_entered | naturaltime}}
-                    </p>
+                    <em>{{comment.commenter_name}}</em>,
                 {% else %}
-                    <p>
-                        <em>Anonomous</em>, {{comment.date_entered | naturaltime}}
-                    </p>
+                        <em>Anonomous</em>, 
                 {% endif %}
-                
+                {{comment.date_entered | naturaltime}}
+                </p>
                 <p class="comment_text">{{comment.comment_text}}</p>
             </div>
         {% endfor %}
