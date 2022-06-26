@@ -4,7 +4,7 @@ from .models import Comment
 from .forms import CommentForm
 
 def comments_context_processor(request):
-    comments = Comment.objects.all()
+    comments = Comment.objects.filter(ok_to_display=True)
     comments_count = len(comments)
     paginator = Paginator(comments, 10)
     page_number = request.GET.get('comment_page')
