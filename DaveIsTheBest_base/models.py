@@ -13,4 +13,4 @@ class Comment(models.Model):
     ok_to_display = models.BooleanField(default=True)
 
     class Meta:
-        ordering = ['date_entered']
+        ordering = ['-date_entered']
