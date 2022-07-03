@@ -7,7 +7,7 @@ name = "pypi"
 django = "*"
 mysqlclient = "*"
 django-debug-toolbar = "*"
-sklearn = "*"
+scikit-learn = "==1.0.2"
 
 [dev-packages]
 
