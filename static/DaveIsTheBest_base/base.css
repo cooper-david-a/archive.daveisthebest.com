@@ -86,6 +86,13 @@ header nav a {
     display: none;
 }
 
+#comment_messages {    
+    text-decoration: none;
+    text-align: left;
+    list-style: none;
+    color: red;
+}
+
 #id_comment_text {
     width:100%;
 }

@@ -45,6 +45,13 @@
                 <input type="submit" value="Post">
             </form>
         </div>        
+        {% if messages %}
+        <ul id="comment_messages">
+            {% for message in messages %}
+                <li>{{ message }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
         <h4>{{comments_count}} Comments</h4>
         {% for comment in comment_page_obj %}
             <div id="existing_comment_card">

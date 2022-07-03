@@ -1,4 +1,5 @@
 from django.views.generic import TemplateView, RedirectView
+from django.contrib import messages
 from .forms import CommentForm
 
 class Home(TemplateView):
@@ -14,6 +15,9 @@ class CommentFormView(RedirectView):
         form = CommentForm(request.POST)
         if form.is_valid():
             form.save()
+            if form.instance.auto_is_spam:
+                messages.add_message(request, messages.INFO,
+                'Your comment was auto labeled as spam and will be reviewed manually.')
             return self.get(request, *args, **kwargs)
         else:
             return self.get(request, *args, **kwargs)            
