@@ -23,7 +23,7 @@ class Comment(models.Model):
         spam_filter = DaveisthebestBaseConfig.spam_filter_model
         spam_vectorizer = DaveisthebestBaseConfig.spam_vectorizer
         vectorized_comment = spam_vectorizer.transform([self.comment_text])
-        is_spam = spam_filter.predict(vectorized_comment)
+        is_spam = (spam_filter.predict_proba(vectorized_comment)[:,1]>.3).astype(bool)
         self.auto_is_spam = bool(is_spam)
         
         self.ok_to_display = not (self.auto_is_spam or self.manual_is_spam)
