@@ -11,7 +11,7 @@ class BJJ(TemplateView):
 class CommentFormView(RedirectView):
     http_method_names = ['post']
     def post(self, request, *args, **kwargs):
-        self.url = request.META['HTTP_REFERER']
+        self.url = request.META['HTTP_REFERER'] + r'#new_comment_form'
         form = CommentForm(request.POST)
         if form.is_valid():
             form.save()

@@ -58,3 +58,7 @@
     text-align: center;    
     max-height: 240px;    
 }
+
+.card h2 {
+    text-align: center;
+}
