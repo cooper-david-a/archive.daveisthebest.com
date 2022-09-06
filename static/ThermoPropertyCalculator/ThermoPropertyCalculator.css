@@ -1,6 +1,7 @@
 .state_container table { 
   border: solid black 2px;
   margin: 15px;
+  display: inline-block;
 }
 
 .state_container th {
@@ -21,4 +22,14 @@
 
 .state_container option {
   color: black;
+}
+
+#PH_plot {
+  display: inline-block;
+  background-color: white;
+  border: solid 1px black;
+  height: 100vw;
+  width: 100vw;
+  max-width: 1000px;
+  max-height: 1000px;
 }
