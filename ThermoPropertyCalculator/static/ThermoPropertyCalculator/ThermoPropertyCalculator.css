@@ -24,7 +24,7 @@
   color: black;
 }
 
-#PH_plot {
+#plot_window {
   display: inline-block;
   background-color: white;
   border: solid 1px black;

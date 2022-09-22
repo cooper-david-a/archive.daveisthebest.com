@@ -45,6 +45,7 @@ const variables = {
 
 const elements = {
   fluid: document.getElementById('fluid'),
+  plot_type: document.getElementById('plot_type'),
   
   in1Var: document.getElementById('in1Var'),
   in1Value: document.getElementById('in1Value'),
@@ -161,15 +162,7 @@ function calculate() {
   elements.outQValue.innerText = ((state.Q <= 1) & (state.Q >= 0)) ? elements.outQValue.innerText : "N/A";
   
   elements.outPhase.innerText = getPhase();
-  Plotly.addTraces(
-    'PH_plot',
-    {
-      x: [state.H],
-      y: [state.P],
-      type: 'scatter',
-      mode: 'markers',
-      marker:{size:20}
-    });
+
 };
 
 
@@ -177,136 +170,298 @@ function initialize() {
   updateSecondInputVariables();
   updateInputUnits();
   updateOutputUnits();
+  property_plot();
 };
 
 
-const sat_dome_trace = {
-  x: PH_plot_data.H_sat_dome,
-  y: PH_plot_data.P_sat_dome,
-  name: 'saturation dome',
-  type: 'scatter',
-  hoverinfo: 'skip'
+function PH_plot() {
+  let fluid = elements.fluid.value;
+  plot_data = (fluid == 'Water') ? PH_Water_data : PH_R134a_data;
+  
+  const sat_dome_trace = {
+    x: plot_data.H_sat_dome,
+    y: plot_data.P_sat_dome,
+    name: 'saturation dome',
+    type: 'scatter',
+    hoverinfo: 'skip'
+  }
+  
+  const V_trace = {
+    x: plot_data.H,
+    y: plot_data.P,
+    z: plot_data.V,
+    type: 'contour',
+    name: 'V (m^3/kg)',
+    showscale: false,
+    hoverongaps: false,
+    autocontour: false,
+    contours: {
+      start: .001,
+      coloring: 'none',
+      showlabels: true,
+    },
+    line: {
+      dash: "longdash"
+    },
+    hovertemplate: 'V: %{z:.3g} (m^3/kg)<extra></extra>',
+  }
+
+  const D_trace = {
+    x: plot_data.H,
+    y: plot_data.P,
+    z: plot_data.D,
+    type: 'contour',
+    name: 'D (kg/m^3)',
+    showscale: false,
+    hoverongaps: false,
+    contours: {
+      coloring: 'none',
+      showlabels: true,
+    },
+    line: {
+      dash: "dashdot"
+    },
+    hovertemplate: 'D: %{z:4.2g} (kg/m^3)<extra></extra>',
+  }
+  const S_trace = {
+    x: plot_data.H,
+    y: plot_data.P,
+    z: plot_data.S,
+    type: 'contour',
+    name: 'S (J/(kg*K))',
+    showscale: false,
+    hoverongaps: false,
+    contours: {
+      coloring: 'none',
+      showlabels: true,
+    },
+    line: {
+      dash: "dot"
+    },
+    hovertemplate: 'S: %{z:d} (J/(kg*K))<extra></extra>',
+  }
+  const Q_trace = {
+    x: plot_data.H,
+    y: plot_data.P,
+    z: plot_data.Q,
+    type: 'contour',
+    name: 'Q (-)',
+    autocontour: true,
+    contours: {
+      start: 0.1,
+      size: .1,
+      end: 0.9,
+      coloring: "none",
+      labelformat: ".1f",
+      showlabels: true,
+    },
+  
+    line: {
+      dash: "dash",
+    },
+  
+    zmax: 1,
+    zmin: 0,
+  
+    showscale: false,
+    hoverongaps: false,
+    hovertemplate: 'Q: %{z:0.2f}<extra></extra>',
+  }
+  const T_trace = {
+    x: plot_data.H,
+    y: plot_data.P,
+    z: plot_data.T,
+    type: 'contour',
+    name: 'T (K)',
+    showscale: false,
+    hoverongaps: false,
+    contours: {
+      coloring: 'none',
+      showlabels: true,
+    },
+    line: {
+      dash: "solid"
+    },
+    hovertemplate: 'H: %{x:1.2e} J/kg<br>P: %{y:1.2e} Pa<br>T: %{z:1.0d}K<extra></extra>',
+  }
+  
+  const data = [sat_dome_trace, D_trace, S_trace, Q_trace, T_trace]
+  
+  const layout = {
+    title: "Water P-H diagram",
+    showlegend: true,
+    legend: {
+      orientation: 'h',
+      x: .5,
+      xanchor: 'center',
+      y: 1.05,
+    },
+    hovermode: 'x',
+    xaxis: {
+      title: 'H (J/kg)',
+      text: 'H (J/kg)'
+    },
+    yaxis: {
+      title: 'P (Pa)',
+      text: 'P (Pa)',
+      type: 'log'
+    }
+  }
+  
+  Plotly.newPlot('plot_window', data, layout, {responsive: true});
 }
 
-const V_trace = {
-  x: PH_plot_data.H,
-  y: PH_plot_data.P,
-  z: PH_plot_data.V,
-  type: 'contour',
-  name: 'V (m^3/kg)',
-  showscale: false,
-  hoverongaps: false,
-  autocontour: false,
-  contours: {
-    start: .001,
-    coloring: 'none',
-    showlabels: true,
-  },
-  line: {
-    dash: "longdash"
-  },
-  hovertemplate: 'V: %{z:.3g} (m^3/kg)<extra></extra>',
-}
-const D_trace = {
-  x: PH_plot_data.H,
-  y: PH_plot_data.P,
-  z: PH_plot_data.D,
-  type: 'contour',
-  name: 'D (kg/m^3)',
-  showscale: false,
-  hoverongaps: false,
-  contours: {
-    coloring: 'none',
-    showlabels: true,
-  },
-  line: {
-    dash: "dashdot"
-  },
-  hovertemplate: 'D: %{z:3.2g} (kg/m^3)<extra></extra>',
-}
-const S_trace = {
-  x: PH_plot_data.H,
-  y: PH_plot_data.P,
-  z: PH_plot_data.S,
-  type: 'contour',
-  name: 'S (J/(kg*K))',
-  showscale: false,
-  hoverongaps: false,
-  contours: {
-    coloring: 'none',
-    showlabels: true,
-  },
-  line: {
-    dash: "dot"
-  },
-  hovertemplate: 'S: %{z:d} (J/(kg*K))<extra></extra>',
-}
-const Q_trace = {
-  x: PH_plot_data.H,
-  y: PH_plot_data.P,
-  z: PH_plot_data.Q,
-  type: 'contour',
-  name: 'Q (-)',
-  autocontour: true,
-  contours: {
-    start: 0,
-    size: .1,
-    end: 1,
-    coloring: "none",
-    labelformat: ".1f",
-    showlabels: true,
-  },
+function TS_plot() {
+  let fluid = elements.fluid.value;
+  plot_data = (fluid == 'Water') ? TS_Water_data : TS_R134a_data;
 
-  line: {
-    smoothing: 1,
-    dash: "dash",
-  },
+  const sat_dome_trace = {
+    x: plot_data.S_sat_dome,
+    y: plot_data.T_sat_dome,
+    name: 'saturation dome',
+    type: 'scatter',
+    hoverinfo: 'skip'
+  }
 
-  zmax: 1,
-  zmin: 0,
+  const V_trace = {
+    x: plot_data.S,
+    y: plot_data.T,
+    z: plot_data.V,
+    type: 'contour',
+    name: 'V (m^3/kg)',
+    showscale: false,
+    hoverongaps: false,
+    autocontour: false,
+    contours: {
+      start: .001,
+      coloring: 'none',
+      showlabels: true,
+    },
+    line: {
+      dash: "longdash"
+    },
+    hovertemplate: 'V: %{z:.2e} m^3/kg<extra></extra>',
+  }
 
-  showscale: false,
-  hoverongaps: false,
-  hovertemplate: 'Q: %{z:0.2f}<extra></extra>',
+  const D_trace = {
+    x: plot_data.S,
+    y: plot_data.T,
+    z: plot_data.D,
+    type: 'contour',
+    name: 'D (kg/m^3)',
+    showscale: false,
+    hoverongaps: false,
+    contours: {
+      coloring: 'none',
+      showlabels: true,
+    },
+    line: {
+      dash: "dashdot"
+    },
+    hovertemplate: 'D: %{z:.2e} kg/m^3<extra></extra>',
+  }
+  const H_trace = {
+    x: plot_data.S,
+    y: plot_data.T,
+    z: plot_data.H,
+    type: 'contour',
+    name: 'H (J/(kg*K))',
+    showscale: false,
+    hoverongaps: false,
+    contours: {
+      start: 5e5,
+      size: 5e5,
+      end: 1e7,
+      coloring: 'none',
+      showlabels: true,
+    },
+    line: {
+      dash: "dot"
+    },
+    hovertemplate: 'H: %{z:.2e} J/(kg*K)<extra></extra>',
+  }
+  const Q_trace = {
+    x: plot_data.S,
+    y: plot_data.T,
+    z: plot_data.Q,
+    type: 'contour',
+    name: 'Q (-)',
+    autocontour: true,
+    contours: {
+      start: 0,
+      size: .1,
+      end: 1,
+      coloring: "none",
+      labelformat: ".1f",
+      showlabels: true,
+    },
+
+    line: {
+      smoothing: 1,
+      dash: "dash",
+    },
+
+    zmax: 1,
+    zmin: 0,
+
+    showscale: false,
+    hoverongaps: false,
+    hovertemplate: 'Q: %{z:.2f}<extra></extra>',
+  }
+  const P_trace = {
+    x: plot_data.S,
+    y: plot_data.T,
+    z: plot_data.P,
+    type: 'contour',
+    name: 'P (Pa)',
+    showscale: false,
+    hoverongaps: false,
+    contours: {
+      start: 1e12,
+      size: 1e12,
+      end: 5e12,
+      coloring: 'none',
+      showlabels: true,
+    },
+    line: {
+      dash: "solid"
+    },
+    hovertemplate: 'S: %{x:d} J/kg/K<br>T: %{y:d} K<br>P: %{z:.3e} Pa<extra></extra>',
+  }
+
+  const data = [sat_dome_trace, V_trace, H_trace, Q_trace, P_trace]
+
+  const layout = {
+    title: `${fluid} T-S diagram`,
+    showlegend: true,
+    legend: {
+      orientation: 'h',
+      x: .5,
+      xanchor: 'center',
+      y: 1.05,
+    },
+    hovermode: 'x',
+    xaxis: {
+      title: 'S (J/kg/K)',
+      text: 'S (J/kg/K)'
+    },
+    yaxis: {
+      title: 'T (K)',
+      text: 'T (K)',
+    }
+  }
+
+  Plotly.newPlot('plot_window', data, layout, { responsive: true });
 }
-const T_trace = {
-  x: PH_plot_data.H,
-  y: PH_plot_data.P,
-  z: PH_plot_data.T,
-  type: 'contour',
-  name: 'T (K)',
-  showscale: false,
-  hoverongaps: false,
-  contours: {
-    start: 300,
-    size: 50,
-    end: 1000,
-    coloring: 'none',
-    showlabels: true,
-  },
-  line: {
-    dash: "solid"
-  },
-  hovertemplate: 'H: %{x:1.2e} J/kg<br>P: %{y:1.2e} Pa<br>T: %{z:1.0d}K<extra></extra>',
-}
 
-const data = [sat_dome_trace, D_trace, S_trace, Q_trace, T_trace]
-
-const layout = {
-  title: "Water P-H diagram",
-  showlegend: true,
-  hovermode: 'x',
-  xaxis: {
-    title: 'H (J/kg)',
-    text: 'H (J/kg)'
-  },
-  yaxis: {
-    title: 'P (Pa)',
-    text: 'P (Pa)',
-    type: 'log'
+function property_plot() {
+  plot_type = elements.plot_type.value;
+  if (plot_type == 'PH') {
+    PH_plot();
+  }
+  if (plot_type == 'TS') {
+    TS_plot();
   }
 }
 
-Plotly.newPlot('PH_plot', data, layout, {responsive: true});
-
-initialize()
+initialize();

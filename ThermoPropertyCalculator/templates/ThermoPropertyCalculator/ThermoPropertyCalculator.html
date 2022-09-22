@@ -6,8 +6,12 @@
 <link rel="stylesheet" href="{% static 'ThermoPropertyCalculator/ThermoPropertyCalculator.css' %}">
 <script src="https://cdn.plot.ly/plotly-2.14.0.min.js"></script>
 <script defer src="{% static 'ThermoPropertyCalculator/coolprop.js' %}"></script>
-<script defer src="{% static 'ThermoPropertyCalculator/plot_data.js' %}"></script>
+<script defer src="{% static 'ThermoPropertyCalculator/PH_R134a.js' %}"></script>
+<script defer src="{% static 'ThermoPropertyCalculator/PH_Water.js' %}"></script>
+<script defer src="{% static 'ThermoPropertyCalculator/TS_R134a.js' %}"></script>
+<script defer src="{% static 'ThermoPropertyCalculator/TS_Water.js' %}"></script>
 <script defer src="{% static 'ThermoPropertyCalculator/ThermoPropertyCalculator.js' %}"></script>
+
 {% endblock headTag %}
 
 {% block about_text %}
@@ -26,17 +30,22 @@
 
 {% block content %}
   <div class="state_container">
-    <table id="state1">
+    <div id="fluid_container">
+      <label for="plot_type">Plot type:</label>
+      <select id="plot_type" onchange="property_plot()">
+        <option value="PH" selected>PH</option>
+        <option value="TS">TS</option>    
+      </select>
+      <label for="fluid">Fluid:</label>
+      <select id="fluid" onchange="property_plot()">
+        <option value="Water">Water</option>
+        <option value="R134a">R134a</option>    
+      </select>
+    </div>
+    <table id="state_table">
       <tr>
-        <th colspan="3" style="border-bottom: solid 2px">State 1</th>
-      </tr>
-      <tr>
-        <th colspan="3">
-          <label for="fluid">Fluid:</label>
-          <select id="fluid">
-            <option value="Water">Water</option>
-            <option value="R134a">R134a</option>    
-          </select>    
+        <th colspan="3" style="border-bottom: solid black 2px">
+          <h2>State</h2>
         </th>
       </tr>
       <tr>
@@ -137,6 +146,6 @@
       </tr>
     </table>
   </div>
-  <div id="PH_plot"></div>  
-  
-  {% endblock content %}
+
+  <div id="plot_window"></div>
+{% endblock content %}
