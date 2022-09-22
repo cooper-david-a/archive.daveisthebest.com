@@ -288,7 +288,7 @@ function PH_plot() {
   const data = [sat_dome_trace, D_trace, S_trace, Q_trace, T_trace]
   
   const layout = {
-    title: "Water P-H diagram",
+    title: `${fluid} P-H diagram`,
     showlegend: true,
     legend: {
       orientation: 'h',
