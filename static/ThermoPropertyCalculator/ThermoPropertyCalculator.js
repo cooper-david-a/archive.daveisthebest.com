@@ -2,6 +2,7 @@ var phaseIndexLiquid;
 var phaseIndexMixed;
 var phaseIndexVapor;
 var phaseIndexSupCrit;
+var state = {};
 
 convertToSI = {
   '-': (x) => x,
@@ -46,6 +47,7 @@ const variables = {
 const elements = {
   fluid: document.getElementById('fluid'),
   plot_type: document.getElementById('plot_type'),
+  plot_window: document.getElementById('plot_window'),
   
   in1Var: document.getElementById('in1Var'),
   in1Value: document.getElementById('in1Value'),
@@ -148,7 +150,6 @@ function calculate() {
   let fluid = elements.fluid.value;
   const in1 = getInput(1);
   const in2 = getInput(2);
-  let state = {};
 
   for (variable of Object.keys(variables)) {
     state[variable] = variables[variable].calc(in1, in2, fluid);
@@ -162,6 +163,8 @@ function calculate() {
   elements.outQValue.innerText = ((state.Q <= 1) & (state.Q >= 0)) ? elements.outQValue.innerText : "N/A";
   
   elements.outPhase.innerText = getPhase();
+
+  plot_state();
 
 };
 
@@ -284,8 +287,20 @@ function PH_plot() {
     },
     hovertemplate: 'H: %{x:1.2e} J/kg<br>P: %{y:1.2e} Pa<br>T: %{z:1.0d}K<extra></extra>',
   }
+
+  const state_trace = {
+    x: [],
+    y: [],
+    name: 'state',
+    type: 'scatter',
+    mode: 'markers',
+    hoverinfo: 'skip',
+    marker: {
+      size: 12,
+    }
+  }
   
-  const data = [sat_dome_trace, D_trace, S_trace, Q_trace, T_trace]
+  const data = [sat_dome_trace, D_trace, S_trace, Q_trace, T_trace, state_trace]
   
   const layout = {
     title: `${fluid} P-H diagram`,
@@ -429,7 +444,19 @@ function TS_plot() {
     hovertemplate: 'S: %{x:d} J/kg/K<br>T: %{y:d} K<br>P: %{z:.3e} Pa<extra></extra>',
   }
 
-  const data = [sat_dome_trace, V_trace, H_trace, Q_trace, P_trace]
+  const state_trace = {
+    x: [],
+    y: [],
+    name: 'state',
+    type: 'scatter',
+    mode: 'markers',
+    hoverinfo: 'skip',
+    marker: {
+      size: 12,
+    }
+  };
+
+  const data = [sat_dome_trace, V_trace, H_trace, Q_trace, P_trace, state_trace]
 
   const layout = {
     title: `${fluid} T-S diagram`,
@@ -464,4 +491,30 @@ function property_plot() {
   }
 }
 
+function plot_state() {
+
+  plot_type = elements.plot_type.value;
+  data = elements.plot_window.data;
+
+  switch (plot_type) {
+    case 'PH':
+      x = state.H;
+      y = state.P;
+      break;
+    case 'TS':
+      x = state.S;
+      y = state.T;
+  }
+
+  const state_trace_update = {
+    x: [[x]],
+    y: [[y]],
+  }
+
+
+  Plotly.restyle('plot_window', state_trace_update, data.length - 1)
+
+}
+
+  
 initialize();
