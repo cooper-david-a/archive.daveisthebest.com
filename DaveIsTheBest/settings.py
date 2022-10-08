@@ -47,7 +47,6 @@ INSTALLED_APPS = [
     'DaveIsTheBest_base',
     'HIIT_Timer',
     'ThermoPropertyCalculator',
-    'todo',
 ]
 
 MIDDLEWARE = [
