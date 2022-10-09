@@ -8,6 +8,9 @@ class Home(TemplateView):
 class BJJ(TemplateView):
     template_name = 'DaveIsTheBest_base/BJJ.html'
 
+class SudokuOpenCVView(TemplateView):
+    template_name = 'DaveIsTheBest_base/sudoku_opencv.html'
+
 class CommentFormView(RedirectView):
     http_method_names = ['post']
     def post(self, request, *args, **kwargs):

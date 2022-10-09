@@ -19,8 +19,7 @@ from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('__debug__/',include(debug_toolbar.urls)),
-    path('', include('DaveIsTheBest_base.urls')),
+    path('__debug__/',include(debug_toolbar.urls)),    path('', include('DaveIsTheBest_base.urls')),
     path('HIIT_Timer/', include('HIIT_Timer.urls')),
     path('ThermoPropertyCalculator/', include('ThermoPropertyCalculator.urls')),
 ]
