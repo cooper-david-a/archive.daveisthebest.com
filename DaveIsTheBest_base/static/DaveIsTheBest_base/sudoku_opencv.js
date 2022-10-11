@@ -1,4 +1,4 @@
-const FPS = 1;
+const FPS = 30;
 let videoIn = document.getElementById("videoIn");
 let canvasOut = document.getElementById("canvasOut");
 let context = canvasOut.getContext('2d');
@@ -7,6 +7,8 @@ let dst
 let cap
 let contours
 let hierarchy
+let polygon
+let tmp
 let streaming = false;
 
 navigator.mediaDevices.getUserMedia({ video: true, audio: false })
@@ -29,11 +31,14 @@ function go() {
         cap = new cv.VideoCapture(videoIn);
         contours = new cv.MatVector();
         hierarchy = new cv.Mat();
-        setTimeout(processVideo, 0);
         streaming = true;
+        tmp = new cv.Mat();
+        polygon = new cv.MatVector();
+        polygon.push_back(tmp);
+        setTimeout(processVideo, 0);
     } catch (err){
         console.log(err);
-        setTimeout(go, 50);
+        setTimeout(go, 100);
     }
     
 }
@@ -49,6 +54,8 @@ function processVideo() {
             dst.delete();
             contours.delete();
             hierarchy.delete();
+            polygon.delete();
+            tmp.delete();
             context.clearRect(0, 0, canvasOut.width, canvasOut.height);
             return;
         }
@@ -69,8 +76,11 @@ function processVideo() {
             }
         }
         
+        cv.approxPolyDP(contours.get(indexOfMaxArea), tmp, 100, true);
+        polygon.set(0,tmp);
         let color = new cv.Scalar(128, 128, 128);
-        cv.drawContours(dst, contours, indexOfMaxArea, color, 10, cv.LINE_8, hierarchy, 500);
+        cv.drawContours(dst, polygon, 0, color, 10, cv.LINE_8, hierarchy, 0);
+
         cv.imshow('canvasOut', dst);
         // schedule the next one.
         let delay = 1000 / FPS - (Date.now() - begin);
