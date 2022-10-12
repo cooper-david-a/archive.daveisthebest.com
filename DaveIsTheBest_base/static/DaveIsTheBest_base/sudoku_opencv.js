@@ -1,14 +1,16 @@
-const FPS = 30;
+const FPS = 10;
 let videoIn = document.getElementById("videoIn");
+let canvasMid = document.getElementById("canvasMid");
 let canvasOut = document.getElementById("canvasOut");
-let context = canvasOut.getContext('2d');
-let src
-let dst
-let cap
-let contours
-let hierarchy
-let polygon
-let tmp
+let overlayView;
+let puzzleView;
+let videoCapture;
+let contours;
+let contoursHierarchy;
+let polygon;
+let tmpPolygon;
+let perspectiveTransform;
+let color;
 let streaming = false;
 
 navigator.mediaDevices.getUserMedia({ video: true, audio: false })
@@ -26,15 +28,16 @@ function ready() {
 
 function go() {
     try {
-        src = new cv.Mat(videoIn.height, videoIn.width, cv.CV_8UC4);
-        dst = new cv.Mat(videoIn.height, videoIn.width, cv.CV_8UC1);
-        cap = new cv.VideoCapture(videoIn);
+        overlayView = new cv.Mat(canvasMid.height, canvasMid.width, cv.CV_8UC4);
+        puzzleView = new cv.Mat(canvasOut.height, canvasOut.width, cv.CV_8UC1);
+        videoCapture = new cv.VideoCapture(videoIn);
         contours = new cv.MatVector();
-        hierarchy = new cv.Mat();
-        streaming = true;
-        tmp = new cv.Mat();
+        contoursHierarchy = new cv.Mat();
+        tmpPolygon = new cv.Mat();
         polygon = new cv.MatVector();
-        polygon.push_back(tmp);
+        polygon.push_back(tmpPolygon);
+        color = new cv.Scalar(255, 0, 0, 255);
+        streaming = true;
         setTimeout(processVideo, 0);
     } catch (err){
         console.log(err);
@@ -47,25 +50,29 @@ function stop() {
     streaming = false;
 }
 
+function sortBoxPoints(points) {
+    
+}
+
 function processVideo() {
     try {
         if (!streaming) {
-            src.delete();
-            dst.delete();
+            overlayView.delete();
+            puzzleView.delete();
             contours.delete();
-            hierarchy.delete();
+            contoursHierarchy.delete();
+            tmpPolygon.delete();
             polygon.delete();
-            tmp.delete();
-            context.clearRect(0, 0, canvasOut.width, canvasOut.height);
+            perspectiveTransform.delete();
             return;
         }
         let begin = Date.now();
         // start processing.
-        cap.read(src);
-        cv.cvtColor(src, dst, cv.COLOR_RGBA2GRAY);
-        cv.adaptiveThreshold(dst, dst, 255, cv.ADAPTIVE_THRESH_MEAN_C, cv.THRESH_BINARY, 11, 11)
-        cv.bitwise_not(dst, dst);
-        cv.findContours(dst, contours, hierarchy, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
+        videoCapture.read(overlayView);
+        cv.cvtColor(overlayView, puzzleView, cv.COLOR_RGBA2GRAY);
+        cv.adaptiveThreshold(puzzleView, puzzleView, 255, cv.ADAPTIVE_THRESH_MEAN_C, cv.THRESH_BINARY, 11, 11)
+        cv.bitwise_not(puzzleView, puzzleView);
+        cv.findContours(puzzleView, contours, contoursHierarchy, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
         let maxArea = 0;
         let indexOfMaxArea = 0;
         for (let i = 0; i < contours.size(); i++) {
@@ -76,12 +83,19 @@ function processVideo() {
             }
         }
         
-        cv.approxPolyDP(contours.get(indexOfMaxArea), tmp, 100, true);
-        polygon.set(0,tmp);
-        let color = new cv.Scalar(128, 128, 128);
-        cv.drawContours(dst, polygon, 0, color, 10, cv.LINE_8, hierarchy, 0);
+        cv.approxPolyDP(contours.get(indexOfMaxArea), tmpPolygon, 100, true);
+        polygon.set(0,tmpPolygon);
+        cv.drawContours(overlayView, polygon, 0, color, 3, cv.LINE_4, contoursHierarchy, 0);
+        if (tmpPolygon.rows == 4) {
+            let a = cv.matFromArray(4, 1, cv.CV_32FC2, tmpPolygon.data32S)
+            let b = cv.matFromArray(4, 1, cv.CV_32FC2, [0,600,600,600,600,0,0,0])
+            let M = cv.getPerspectiveTransform(a, b);
+            let dsize = new cv.Size(puzzleView.rows, puzzleView.cols);
+            cv.warpPerspective(puzzleView, puzzleView, M, dsize, cv.INTER_LINEAR, cv.BORDER_CONSTANT, new cv.Scalar());            
+        }
 
-        cv.imshow('canvasOut', dst);
+        cv.imshow('canvasMid', overlayView);
+        cv.imshow('canvasOut', puzzleView);
         // schedule the next one.
         let delay = 1000 / FPS - (Date.now() - begin);
         setTimeout(processVideo, delay);
