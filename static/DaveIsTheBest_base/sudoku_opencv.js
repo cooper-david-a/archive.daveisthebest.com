@@ -1,6 +1,6 @@
-const FPS = 1;
+const FPS = 5;
 const DIGIT_THRESHOLD = 50;
-const PUZZLE_SIZE = 400;
+const PUZZLE_SIZE = 396;
 let videoIn = document.getElementById("videoIn");
 let canvasOverlay = document.getElementById("canvasOverlay");
 let canvasPuzzle = document.getElementById("canvasPuzzle");
@@ -51,7 +51,11 @@ function go() {
         horizontalStructuralElement = cv.getStructuringElement(cv.MORPH_RECT, { width: PUZZLE_SIZE / 20, height: 1 });
         verticalStructuralElement = cv.getStructuringElement(cv.MORPH_RECT, { width: 1, height: PUZZLE_SIZE / 20 });
         squareStructuralElement = cv.getStructuringElement(cv.MORPH_RECT, { width: 5, height: 5 });
-        digitView = new cv.Mat(64, 64, cv.CV_8UC1);
+        digitView = new cv.Mat(44, 44, cv.CV_8UC1);
+
+        labels = mask.clone();
+        stats = new cv.Mat();
+        centroids = new cv.Mat();
 
         setTimeout(processVideo, 0);
         return
@@ -82,6 +86,10 @@ function stop() {
     verticalStructuralElement.delete();
     squareStructuralElement.delete();
     digitView.delete();
+
+    labels.delete();
+    stats.delete();
+    centroids.delete();
 }
 
 function processVideo() {
@@ -110,7 +118,7 @@ function processVideo() {
 
         let delay = 1000 / FPS - (Date.now() - begin);
         console.log(delay);
-        setTimeout(processVideo, delay);
+        //setTimeout(processVideo, delay);
 
     }catch (err) {
         console.log(err);
@@ -162,4 +170,6 @@ function extractDigits() {
     cv.bitwise_not(mask, mask)
 
     cv.bitwise_and(hiddenView, mask, hiddenView);
+
+    let nblobs = cv.connectedComponentsWithStats(hiddenView, labels, stats, centroids, 8, cv.CV_16U);
 }
