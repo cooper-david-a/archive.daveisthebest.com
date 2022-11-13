@@ -50,8 +50,8 @@ function go() {
         verticalMask = mask.clone();
         horizontalStructuralElement = cv.getStructuringElement(cv.MORPH_RECT, { width: PUZZLE_SIZE / 20, height: 1 });
         verticalStructuralElement = cv.getStructuringElement(cv.MORPH_RECT, { width: 1, height: PUZZLE_SIZE / 20 });
-        squareStructuralElement = cv.getStructuringElement(cv.MORPH_RECT, { width: 5, height: 5 })
-        digitView = mask.clone();
+        squareStructuralElement = cv.getStructuringElement(cv.MORPH_RECT, { width: 5, height: 5 });
+        digitView = new cv.Mat(64, 64, cv.CV_8UC1);
 
         setTimeout(processVideo, 0);
         return
@@ -64,12 +64,32 @@ function go() {
 }
 
 function stop() {
-    streaming = false;    
+    streaming = false;
+
+    videoFrame.delete();
+    hiddenView.delete();
+    puzzleView.delete();
+
+    contours.delete();
+    hierarchy.delete();
+    tempPolygon.delete();
+    polygon.delete();
+
+    mask.delete();
+    horizontalMask.delete();
+    verticalMask.delete();
+    horizontalStructuralElement.delete();
+    verticalStructuralElement.delete();
+    squareStructuralElement.delete();
+    digitView.delete();
 }
 
 function processVideo() {
     try {
         if (!streaming) return;
+
+        let begin = Date.now();
+
         cap.read(videoFrame);
         cv.cvtColor(videoFrame, hiddenView, cv.COLOR_RGBA2GRAY);
         cv.adaptiveThreshold(hiddenView, hiddenView, 255, cv.ADAPTIVE_THRESH_MEAN_C, cv.THRESH_BINARY_INV, 11, 10);
@@ -87,6 +107,10 @@ function processVideo() {
 
         cv.imshow('videoDisplay', videoFrame);
         cv.imshow('canvasPuzzle', hiddenView);
+
+        let delay = 1000 / FPS - (Date.now() - begin);
+        console.log(delay);
+        setTimeout(processVideo, delay);
 
     }catch (err) {
         console.log(err);

@@ -1,11 +1,8 @@
 #videoIn {
+    display: inline;
     border: solid black 1px;
 }
 
-#canvasMid {
-    border: solid black 1px;
-}
-
-#canvasOut {
+#canvasPuzzle {
     border: solid black 1px;
 }
