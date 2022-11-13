@@ -5,17 +5,14 @@
 <link rel="stylesheet" href="{% static 'DaveIsTheBest_base/sudoku_opencv.css' %}">
 {% endblock headTag %}
 
-
-
 {% block content %}
 <div>
-  <video id="videoIn" width="720" height="400"></video>
+  <video id="videoIn" width="864" height="480"></video>
+  <canvas id="videoDisplay"></canvas>
 </div>
+
 <div>
-  <canvas id="canvasMid" width="720" height="400"></canvas>
-</div>
-<div>
-  <canvas id="canvasOut" width="600" height="600"></canvas>
+  <canvas id="canvasPuzzle"></canvas>
 </div>
 
 <button id="go_btn" onclick="go();" disabled>Go</button>
