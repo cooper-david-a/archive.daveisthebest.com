@@ -117,7 +117,7 @@ function processVideo() {
         cv.imshow('canvasPuzzle', hiddenView);
 
         let delay = 1000 / FPS - (Date.now() - begin);
-
+        
         setTimeout(processVideo, delay);
 
     }catch (err) {
