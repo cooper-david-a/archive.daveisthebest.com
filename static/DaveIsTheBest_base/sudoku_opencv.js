@@ -20,6 +20,8 @@ let puzzle = [
 navigator.mediaDevices.getUserMedia({ video: true, audio: false })
     .then(function (stream) {
         videoIn.srcObject = stream;
+        videoIn.width = stream.getVideoTracks()[0].getSettings().width;
+        videoIn.height = stream.getVideoTracks()[0].getSettings().height;
         videoIn.play();
     })
     .catch(function (err) {
@@ -51,7 +53,6 @@ function go() {
         horizontalStructuralElement = cv.getStructuringElement(cv.MORPH_RECT, { width: PUZZLE_SIZE / 20, height: 1 });
         verticalStructuralElement = cv.getStructuringElement(cv.MORPH_RECT, { width: 1, height: PUZZLE_SIZE / 20 });
         squareStructuralElement = cv.getStructuringElement(cv.MORPH_RECT, { width: 5, height: 5 });
-        digitView = new cv.Mat(44, 44, cv.CV_8UC1);
 
         labels = mask.clone();
         stats = new cv.Mat();
@@ -85,7 +86,6 @@ function stop() {
     horizontalStructuralElement.delete();
     verticalStructuralElement.delete();
     squareStructuralElement.delete();
-    digitView.delete();
 
     labels.delete();
     stats.delete();
@@ -117,8 +117,8 @@ function processVideo() {
         cv.imshow('canvasPuzzle', hiddenView);
 
         let delay = 1000 / FPS - (Date.now() - begin);
-        console.log(delay);
-        //setTimeout(processVideo, delay);
+
+        setTimeout(processVideo, delay);
 
     }catch (err) {
         console.log(err);
@@ -167,7 +167,7 @@ function extractDigits() {
 
     cv.add(horizontalMask, verticalMask, mask);
     cv.dilate(mask, mask, squareStructuralElement, new cv.Point(-1, -1), 2);
-    cv.bitwise_not(mask, mask)
+    cv.bitwise_not(mask, mask);
 
     cv.bitwise_and(hiddenView, mask, hiddenView);
 
