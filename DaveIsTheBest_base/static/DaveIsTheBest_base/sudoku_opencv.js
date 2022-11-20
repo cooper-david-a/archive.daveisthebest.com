@@ -121,7 +121,6 @@ function processVideo() {
         cv.imshow('canvasPuzzle', puzzleView);
 
         let delay = 1000 / FPS - (Date.now() - begin);
-        console.log(delay);
         
         setTimeout(processVideo, delay);
 
@@ -180,9 +179,8 @@ function extractDigits() {
     
     for (let i = 1; i < nblobs; i++) {
         let blobStats = stats.data32S.slice(5 * i, 5 * i + 5);
-        let blobCentroid = centroids.data64F.slice(2 * i, 2 * i + 2);
                 
-        if (blobIsDigit(blobStats, blobCentroid)) {
+        if (blobIsDigit(blobStats)) {
             let roiX = Math.min(Math.max(Math.round(blobStats[0] + blobStats[2] / 2 - 22), 0),hiddenView.cols-44);
             let roiY = Math.min(Math.max(Math.round(blobStats[1] + blobStats[3] / 2 - 22), 0),hiddenView.cols-44);
             let rect = {
@@ -201,7 +199,10 @@ function extractDigits() {
 }
 
 function blobIsDigit(blobStats) {
-    let blobCenter = [blobStats[0] + blobStats[2] / 2, blobStats[1] + blobStats[3] / 2];
-    let centeredInSquare = Math.sqrt(blobCenter.map(x => x % 44 - 22).reduce((s, val) => s + val * val)) < 15;
-    return (blobStats[4] > 100) && centeredInSquare;
+    if (blobStats[4] > 100) {
+        let blobCenter = [blobStats[0] + blobStats[2] / 2, blobStats[1] + blobStats[3] / 2];
+        let centerDistance = Math.sqrt(blobCenter.map(x => x % 44 - 22).reduce((s, val) => s + val * val,0));
+        return centerDistance < 10;        
+    }
+    return false;
 }
