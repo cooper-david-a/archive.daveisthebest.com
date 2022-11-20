@@ -56,6 +56,7 @@ function go() {
         labels = mask.clone();
         stats = new cv.Mat();
         centroids = new cv.Mat();
+        digitRoi = new cv.Mat(44, 44, cv.CV_8UC1);
 
         videoIn.style.display = 'none';
         videoDisplay.style.display = 'inline';
@@ -91,6 +92,7 @@ function stop() {
     labels.delete();
     stats.delete();
     centroids.delete();
+    digitRoi.delete();
 
     videoIn.style.display = 'inline';
     videoDisplay.style.display = 'none';
@@ -121,7 +123,6 @@ function processVideo() {
         cv.imshow('canvasPuzzle', puzzleView);
 
         let delay = 1000 / FPS - (Date.now() - begin);
-        console.log(delay);
         
         setTimeout(processVideo, delay);
 
@@ -171,18 +172,22 @@ function extractDigits() {
     cv.dilate(verticalMask, verticalMask, verticalStructuralElement, new cv.Point(-1, -1), 2);
 
     cv.add(horizontalMask, verticalMask, mask);
-    cv.dilate(mask, mask, squareStructuralElement, new cv.Point(-1, -1), 2);
+    cv.dilate(mask, mask, squareStructuralElement, new cv.Point(-1, -1), 1);
     cv.bitwise_not(mask, mask);
 
     cv.bitwise_and(hiddenView, mask, hiddenView);
+    cv.dilate(hiddenView, hiddenView, new cv.Mat.ones(3,3,cv.CV_8UC1), new cv.Point(-1, -1), 1);
+    cv.erode(hiddenView, hiddenView, new cv.Mat.ones(3, 3, cv.CV_8UC1), new cv.Point(-1, -1), 1);
 
     let nblobs = cv.connectedComponentsWithStats(hiddenView, labels, stats, centroids, 8, cv.CV_16U);
+
+    digitsPixelData = [];
+    digitsPositions = [];
     
     for (let i = 1; i < nblobs; i++) {
         let blobStats = stats.data32S.slice(5 * i, 5 * i + 5);
-        let blobCentroid = centroids.data64F.slice(2 * i, 2 * i + 2);
                 
-        if (blobIsDigit(blobStats, blobCentroid)) {
+        if (blobIsDigit(blobStats)) {
             let roiX = Math.min(Math.max(Math.round(blobStats[0] + blobStats[2] / 2 - 22), 0),hiddenView.cols-44);
             let roiY = Math.min(Math.max(Math.round(blobStats[1] + blobStats[3] / 2 - 22), 0),hiddenView.cols-44);
             let rect = {
@@ -192,7 +197,9 @@ function extractDigits() {
                 height: 44
             };
 
-            digitRoi = hiddenView.roi(rect);
+            digitRoi = hiddenView.roi(rect).clone();
+            digitsPixelData.push(digitRoi.data);
+            digitsPositions.push([Math.round(rect.x / 44), Math.round(rect.y / 44)]);
             let point1 = new cv.Point(rect.x, rect.y);
             let point2 = new cv.Point(rect.x + rect.width, rect.y + rect.height);
             cv.rectangle(puzzleView, point1, point2, new cv.Scalar(0, 0, 255,255), 2, cv.LINE_AA, 0);                        
@@ -201,7 +208,32 @@ function extractDigits() {
 }
 
 function blobIsDigit(blobStats) {
-    let blobCenter = [blobStats[0] + blobStats[2] / 2, blobStats[1] + blobStats[3] / 2];
-    let centeredInSquare = Math.sqrt(blobCenter.map(x => x % 44 - 22).reduce((s, val) => s + val * val)) < 15;
-    return (blobStats[4] > 100) && centeredInSquare;
+    if (blobStats[4] > 100) {
+        let blobCenter = [blobStats[0] + blobStats[2] / 2, blobStats[1] + blobStats[3] / 2];
+        let centerDistance = Math.sqrt(blobCenter.map(x => x % 44 - 22).reduce((s, val) => s + val * val,0));
+        return centerDistance < 10;        
+    }
+    return false;
+}
+
+async function recognize_digits(x) {
+    try {
+        digits = [];
+        const session = await ort.InferenceSession.create('./static/DaveIsTheBest_base/digit_recognizer.onnx');
+
+        for (let i = 0; i < x.length; i++) {
+
+            const dataA = Float32Array.from(x[i]);
+
+            const tensorX = new ort.Tensor('float32', dataA, [1, 44 * 44]);
+
+            const feeds = { X: tensorX };
+
+            results = await session.run(feeds);
+            digits.push(results.label.data[0])
+        }
+
+    } catch (e) {
+        document.write(`failed to inference ONNX model: ${e}.`);
+    }
 }
