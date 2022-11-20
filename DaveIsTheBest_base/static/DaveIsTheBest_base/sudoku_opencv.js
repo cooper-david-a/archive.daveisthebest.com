@@ -1,8 +1,7 @@
-const FPS = 5;
-const DIGIT_THRESHOLD = 50;
+const FPS = 2;
 const PUZZLE_SIZE = 396;
 let videoIn = document.getElementById("videoIn");
-let canvasOverlay = document.getElementById("canvasOverlay");
+let videoDisplay = document.getElementById("videoDisplay");
 let canvasPuzzle = document.getElementById("canvasPuzzle");
 let streaming = false;
 let puzzle = [
@@ -58,6 +57,8 @@ function go() {
         stats = new cv.Mat();
         centroids = new cv.Mat();
 
+        videoIn.style.display = 'none';
+        videoDisplay.style.display = 'inline';
         setTimeout(processVideo, 0);
         return
     } catch (err){
@@ -90,6 +91,9 @@ function stop() {
     labels.delete();
     stats.delete();
     centroids.delete();
+
+    videoIn.style.display = 'inline';
+    videoDisplay.style.display = 'none';
 }
 
 function processVideo() {
@@ -114,9 +118,10 @@ function processVideo() {
         }
 
         cv.imshow('videoDisplay', videoFrame);
-        cv.imshow('canvasPuzzle', hiddenView);
+        cv.imshow('canvasPuzzle', puzzleView);
 
         let delay = 1000 / FPS - (Date.now() - begin);
+        console.log(delay);
         
         setTimeout(processVideo, delay);
 
@@ -172,4 +177,31 @@ function extractDigits() {
     cv.bitwise_and(hiddenView, mask, hiddenView);
 
     let nblobs = cv.connectedComponentsWithStats(hiddenView, labels, stats, centroids, 8, cv.CV_16U);
+    
+    for (let i = 1; i < nblobs; i++) {
+        let blobStats = stats.data32S.slice(5 * i, 5 * i + 5);
+        let blobCentroid = centroids.data64F.slice(2 * i, 2 * i + 2);
+                
+        if (blobIsDigit(blobStats, blobCentroid)) {
+            let roiX = Math.min(Math.max(Math.round(blobStats[0] + blobStats[2] / 2 - 22), 0),hiddenView.cols-44);
+            let roiY = Math.min(Math.max(Math.round(blobStats[1] + blobStats[3] / 2 - 22), 0),hiddenView.cols-44);
+            let rect = {
+                x: roiX,
+                y: roiY,
+                width: 44,
+                height: 44
+            };
+
+            digitRoi = hiddenView.roi(rect);
+            let point1 = new cv.Point(rect.x, rect.y);
+            let point2 = new cv.Point(rect.x + rect.width, rect.y + rect.height);
+            cv.rectangle(puzzleView, point1, point2, new cv.Scalar(0, 0, 255,255), 2, cv.LINE_AA, 0);                        
+        }
+    }
+}
+
+function blobIsDigit(blobStats) {
+    let blobCenter = [blobStats[0] + blobStats[2] / 2, blobStats[1] + blobStats[3] / 2];
+    let centeredInSquare = blobCenter.map(x => x % 44 - 22).reduce((x, y) => Math.sqrt(x * x + y * y)) < 15;
+    return (blobStats[4] > 100) && centeredInSquare;
 }

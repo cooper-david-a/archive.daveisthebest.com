@@ -1,5 +1,9 @@
 #videoIn {
-    display: inline;
+    border: solid black 1px;
+}
+
+#videoDisplay {
+    display: none;
     border: solid black 1px;
 }
 
