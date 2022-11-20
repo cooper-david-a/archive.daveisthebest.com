@@ -202,6 +202,6 @@ function extractDigits() {
 
 function blobIsDigit(blobStats) {
     let blobCenter = [blobStats[0] + blobStats[2] / 2, blobStats[1] + blobStats[3] / 2];
-    let centeredInSquare = blobCenter.map(x => x % 44 - 22).reduce((x, y) => Math.sqrt(x * x + y * y)) < 15;
+    let centeredInSquare = Math.sqrt(blobCenter.map(x => x % 44 - 22).reduce((s, val) => s + val * val)) < 10;
     return (blobStats[4] > 100) && centeredInSquare;
 }
