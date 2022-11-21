@@ -231,7 +231,7 @@ async function recognize_digits(x) {
 
             results = await session.run(feeds);
             digits.push(results.label.data[0])
-        }
+        }        
 
     } catch (e) {
         document.write(`failed to inference ONNX model: ${e}.`);
