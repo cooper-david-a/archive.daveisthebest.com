@@ -1,9 +1,11 @@
 const FPS = 2;
 const PUZZLE_SIZE = 396;
+const DIGIT_SIZE = 20;
 let videoIn = document.getElementById("videoIn");
 let videoDisplay = document.getElementById("videoDisplay");
 let canvasPuzzle = document.getElementById("canvasPuzzle");
 let streaming = false;
+
 let puzzle = [
     [0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -117,14 +119,18 @@ function processVideo() {
         if (tempPolygon.rows == 4) {
             isolatePuzzle();
             extractDigits();
+            recognize_digits().then((digits) => drawDigits(digits)).finally(x => {
+                let delay = 1000 / FPS - (Date.now() - begin);
+                setTimeout(processVideo, delay);
+            })
+        } else {
+            let delay = 1000 / FPS - (Date.now() - begin);
+            setTimeout(processVideo, delay);
         }
+            
 
         cv.imshow('videoDisplay', videoFrame);
         cv.imshow('canvasPuzzle', puzzleView);
-
-        let delay = 1000 / FPS - (Date.now() - begin);
-        
-        setTimeout(processVideo, delay);
 
     }catch (err) {
         console.log(err);
@@ -188,27 +194,18 @@ function extractDigits() {
         let blobStats = stats.data32S.slice(5 * i, 5 * i + 5);
                 
         if (blobIsDigit(blobStats)) {
-            let roiX = Math.min(Math.max(Math.round(blobStats[0] + blobStats[2] / 2 - 22), 0),hiddenView.cols-44);
-            let roiY = Math.min(Math.max(Math.round(blobStats[1] + blobStats[3] / 2 - 22), 0),hiddenView.cols-44);
-            let rect = {
-                x: roiX,
-                y: roiY,
-                width: 44,
-                height: 44
-            };
-
-            digitRoi = hiddenView.roi(rect).clone();
-            digitsPixelData.push(digitRoi.data);
-            digitsPositions.push([Math.round(rect.x / 44), Math.round(rect.y / 44)]);
-            let point1 = new cv.Point(rect.x, rect.y);
-            let point2 = new cv.Point(rect.x + rect.width, rect.y + rect.height);
-            cv.rectangle(puzzleView, point1, point2, new cv.Scalar(0, 0, 255,255), 2, cv.LINE_AA, 0);                        
+            let digitRect = { x: blobStats[0], y: blobStats[1], width: blobStats[2], height: blobStats[3] }
+            let digitCenter = { x: digitRect.x + digitRect.width / 2, y: digitRect.y + digitRect.height / 2 };
+            digitRoi = hiddenView.roi(digitRect).clone();
+            cv.resize(digitRoi, digitRoi, {width: DIGIT_SIZE, height: DIGIT_SIZE})
+            digitsPixelData = digitsPixelData.concat(Array.from(digitRoi.data));
+            digitsPositions.push([Math.round(digitCenter.x/44-.5), Math.round(digitCenter.y/44-.5)]);            
         }
     }
 }
 
 function blobIsDigit(blobStats) {
-    if (blobStats[4] > 100) {
+    if (blobStats[4] > 80) {
         let blobCenter = [blobStats[0] + blobStats[2] / 2, blobStats[1] + blobStats[3] / 2];
         let centerDistance = Math.sqrt(blobCenter.map(x => x % 44 - 22).reduce((s, val) => s + val * val,0));
         return centerDistance < 10;        
@@ -216,24 +213,26 @@ function blobIsDigit(blobStats) {
     return false;
 }
 
-async function recognize_digits(x) {
+async function recognize_digits() {
+    let session = await ort.InferenceSession.create('./static/DaveIsTheBest_base/digit_recognizer.onnx');
+
     try {
-        digits = [];
-        const session = await ort.InferenceSession.create('./static/DaveIsTheBest_base/digit_recognizer.onnx');
-
-        for (let i = 0; i < x.length; i++) {
-
-            const dataA = Float32Array.from(x[i]);
-
-            const tensorX = new ort.Tensor('float32', dataA, [1, 44 * 44]);
-
-            const feeds = { X: tensorX };
-
-            results = await session.run(feeds);
-            digits.push(results.label.data[0])
-        }        
+        let tensorX = new ort.Tensor('float32', Float32Array.from(digitsPixelData), [digitsPositions.length, DIGIT_SIZE * DIGIT_SIZE])
+        let results = await session.run({ X: tensorX })
+        return results.label.data
 
     } catch (e) {
-        document.write(`failed to inference ONNX model: ${e}.`);
+        console.log(`failed to inference ONNX model: ${e}.`);
     }
+}
+
+function drawDigits(digits) {
+    ctx = canvasPuzzle.getContext('2d');
+    ctx.font = '20px Arial';
+    ctx.fillStyle = '#0000ff';
+    
+    for (let i = 0; i < digits.length; i++){
+        ctx.fillText(digits[i],digitsPositions[i][0]*44+30,(digitsPositions[i][1]+1)*44-10)        
+    }
+    
 }
