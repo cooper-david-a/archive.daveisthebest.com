@@ -18,7 +18,7 @@ let puzzle = [
     [0, 0, 0, 0, 0, 0, 0, 0, 0]
 ]
 
-navigator.mediaDevices.getUserMedia({ video: true, audio: false })
+navigator.mediaDevices.getUserMedia({ video: {facingMode:'environment'} })
     .then(function (stream) {
         videoIn.srcObject = stream;
         videoIn.width = stream.getVideoTracks()[0].getSettings().width;
