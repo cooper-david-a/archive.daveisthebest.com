@@ -6,18 +6,6 @@ let videoDisplay = document.getElementById("videoDisplay");
 let canvasPuzzle = document.getElementById("canvasPuzzle");
 let streaming = false;
 
-let puzzle = [
-    [0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0]
-]
-
 navigator.mediaDevices.getUserMedia({ video: {facingMode:'environment'} })
     .then(function (stream) {
         videoIn.srcObject = stream;
@@ -74,6 +62,7 @@ function go() {
 
 function stop() {
     streaming = false;
+    cv.imshow('canvasPuzzle', puzzleView);
 
     videoFrame.delete();
     hiddenView.delete();
@@ -98,6 +87,10 @@ function stop() {
 
     videoIn.style.display = 'inline';
     videoDisplay.style.display = 'none';
+    
+    puzzle = createPuzzle(digits, digitsPositions);
+    puzzle = solvePuzzle(puzzle);
+    drawPuzzle(puzzle);
 }
 
 function processVideo() {
@@ -119,7 +112,7 @@ function processVideo() {
         if (tempPolygon.rows == 4) {
             isolatePuzzle();
             extractDigits();
-            recognize_digits().then((digits) => drawDigits(digits)).finally(x => {
+            recognize_digits().then(nums => digits = Array.from(nums)).then(drawDigits).finally(x => {          
                 let delay = 1000 / FPS - (Date.now() - begin);
                 setTimeout(processVideo, delay);
             })
@@ -128,7 +121,6 @@ function processVideo() {
             setTimeout(processVideo, delay);
         }
             
-
         cv.imshow('videoDisplay', videoFrame);
         cv.imshow('canvasPuzzle', puzzleView);
 
@@ -199,7 +191,7 @@ function extractDigits() {
             digitRoi = hiddenView.roi(digitRect).clone();
             cv.resize(digitRoi, digitRoi, {width: DIGIT_SIZE, height: DIGIT_SIZE})
             digitsPixelData = digitsPixelData.concat(Array.from(digitRoi.data));
-            digitsPositions.push([Math.round(digitCenter.x/44-.5), Math.round(digitCenter.y/44-.5)]);            
+            digitsPositions.push([Math.round(digitCenter.y / 44 - .5), Math.round(digitCenter.x / 44 - .5)]);            
         }
     }
 }
@@ -226,13 +218,199 @@ async function recognize_digits() {
     }
 }
 
-function drawDigits(digits) {
+function drawDigits() {
     ctx = canvasPuzzle.getContext('2d');
     ctx.font = '20px Arial';
     ctx.fillStyle = '#0000ff';
     
     for (let i = 0; i < digits.length; i++){
-        ctx.fillText(digits[i],digitsPositions[i][0]*44+30,(digitsPositions[i][1]+1)*44-10)        
+        ctx.fillText(digits[i], (digitsPositions[i][1] + 1) * 44 - 10, digitsPositions[i][0] * 44 + 30)        
     }
+}
+
+function createPuzzle(digits, digitsPositions) {
+    let puzzle = {
+        grid: Array(9).fill().map(x => Array(9).fill('123456789')),
+        rowTracker: Array(9).fill('123456789'),
+        colTracker: Array(9).fill('123456789'),
+        blockTracker: Array(3).fill().map(x => Array(3).fill('123456789')),
+        valid: true
+    };
+
+    for (let i = 0; i < digits.length; i++) {
+        row = digitsPositions[i][0];
+        col = digitsPositions[i][1];
+        puzzle.grid[row][col] = String(digits[i]);
+        eliminate(puzzle, digits[i], row, col);
+    }
+
+    return puzzle
+}
+
+function eliminate(puzzle, num, row, col) {
+    for (let i = 0; i < 9; i++) {
+        puzzle.grid[i][col] = (i == row) ? puzzle.grid[i][col] : puzzle.grid[i][col].replace(num, '');
+        if (puzzle.grid[i][col] == '') {
+            puzzle.valid = false;
+            return;
+        }
+    }
+
+    for (let j = 0; j < 9; j++) {
+        puzzle.grid[row][j] = (j == col) ? puzzle.grid[row][j] : puzzle.grid[row][j].replace(num, '');
+        if (puzzle.grid[row][j] == '') {
+            puzzle.valid = false;
+            return;
+        }
+    }
+
+    let block_row = Math.floor(row / 3);
+    let block_col = Math.floor(col / 3);
+
+    for (let i = 0; i < 3; i++){
+        for (let j = 0; j < 3; j++){
+            puzzle.grid[block_row * 3 + i][block_col * 3 + j] =
+                ((block_col * 3 + j == col) && (block_row * 3 + i == row)) ?
+                    puzzle.grid[block_row * 3 + i][block_col * 3 + j] :
+                    puzzle.grid[block_row * 3 + i][block_col * 3 + j].replace(num, '');
+            
+            if (puzzle.grid[block_row * 3 + i][block_col * 3 + j] == '') {
+                puzzle.valid = false;
+                return;
+            }
+        }
+    }
+
+    puzzle.rowTracker[row] = puzzle.rowTracker[row].replace(num, '');
+    puzzle.colTracker[col] = puzzle.colTracker[col].replace(num, '');
+    puzzle.blockTracker[block_row][block_col] = puzzle.blockTracker[block_row][block_col].replace(num, '');
+
+}
+
+function removeSingleBlinds(puzzle) {
     
+    let progressing = true;
+
+    while (progressing) {
+
+        progressing = false;
+
+        for (let row = 0; row < 9; row++) {
+            for (num of puzzle.rowTracker[row]) {
+                let col = findOnlyNumInRow(puzzle, row, num);
+                if (col>=0) {
+                    puzzle.grid[row][col] = num;
+                    eliminate(puzzle, num, row, col);
+                    if (!puzzle.valid) return;
+                    progressing = true;
+                }
+            }
+        }
+
+        for (let col = 0; col < 9; col++) {
+            for (num of puzzle.colTracker[col]) {
+                let row = findOnlyNumInCol(puzzle, col, num);
+                if (row>=0) {
+                    puzzle.grid[row][col] = num;
+                    eliminate(puzzle, num, row, col);
+                    if (!puzzle.valid) return;
+                    progressing = true;
+                }
+            }
+        }
+        
+        for (let block_row = 0; block_row < 3; block_row++) {
+            for (let block_col = 0; block_col < 3; block_col++) {
+                for (num of puzzle.blockTracker[block_row][block_col]) {
+                    let [row, col] = findOnlyNumInBlock(puzzle, block_row, block_col, num);
+                    if (row>=0 && col>=0) {
+                        puzzle.grid[row][col] = num;
+                        eliminate(puzzle, num, row, col);
+                        if (!puzzle.valid) return;
+                        progressing = true;
+                    }
+                }
+            }
+        }
+
+        if (solved(puzzle)) break;
+
+    }
+
+}
+
+function findOnlyNumInRow(puzzle, row, num) {
+    let col = -1;
+    for (let j = 0; j < 9; j++) {
+        if (puzzle.grid[row][j].includes(num)) {
+            if (col>=0) return -1;
+            col = j;
+        }
+    }
+    return col;
+}
+
+function findOnlyNumInCol(puzzle, col, num) {
+    let row = -1;
+    for (let i = 0; i < 9; i++) {
+        if (puzzle.grid[i][col].includes(num)) {
+            if (row>=0) return -1;
+            row = i;
+        }
+    }
+    return row;
+}
+
+function findOnlyNumInBlock(puzzle, block_row, block_col, num) {
+    let row = -1;
+    let col = -1;
+    for (let i = block_row * 3; i < block_row * 3 + 3; i++) {
+        for (let j = block_col * 3; j < block_col * 3 + 3; j++) {
+            if (puzzle.grid[i][j].includes(num)) {
+                if (row>=0 || col>=0) return [-1,-1];
+                row = i;
+                col = j;
+            }
+        }
+    }
+
+    return [row, col];
+}
+
+function solved(puzzle) {
+    return puzzle.rowTracker.reduce((tot, val) => (tot + val), '').length == 0;
+}
+
+function solvePuzzle(puzzle) {
+        
+    removeSingleBlinds(puzzle);
+    let testPuzzle = JSON.parse(JSON.stringify(puzzle));
+    
+    for (let i = 0; i < 9; i++){
+        for (let j = 0; j < 9; j++){
+            if (testPuzzle.grid[i][j].length > 1) {
+                for (num of testPuzzle.grid[i][j]) {
+                    testPuzzle.grid[i][j] = num;
+                    eliminate(testPuzzle, num, i, j);
+                    if (testPuzzle.valid) {
+                        solvePuzzle(testPuzzle);
+                    } else testPuzzle = JSON.parse(JSON.stringify(puzzle));
+                    if (solved(testPuzzle)) return testPuzzle;
+                }
+            }
+        }
+    }
+    return testPuzzle;
+}
+
+function drawPuzzle(puzzle) {
+    ctx = canvasPuzzle.getContext('2d');
+    ctx.font = '20px Arial';
+    ctx.fillStyle = '#0000ff';
+
+    for (let i = 0; i < 9; i++) {
+        for (let j = 0; j < 9; j++){
+            ctx.fillText(puzzle.grid[j][i], (i+1) * 44 - 15, j * 44 + 40);
+        }
+    }
 }
