@@ -1,0 +1,42 @@
+{% extends 'DaveIsTheBest_base/base.html' %}
+{% load static %}
+
+{% block headTag %}
+<link rel="stylesheet" href="{% static 'DaveIsTheBest_base/sudoku_opencv.css' %}">
+{% endblock headTag %}
+
+{% block about_text %}
+  <h3>Sudoku Solver</h3>
+  <p>This is a sudoku solver that I first implemented in python and converted to javascript to run in the browser.  
+    It uses <a href="https://opencv.org/"> OpenCv </a> for the computer vision tasks, a neural network trained in <a href="https://scikit-learn.org"/> scikit learn</a> 
+    and deployed using <a href="https://onnxruntime.ai/"> onnx-runtime </a> to recognize the puzzle.  This solver runs completely on the client side.
+    This is still a work in progress, all the pieces work but the UI needs some work and it probably doesn't work on all browsers or platforms.
+  </p>
+
+  <h3>Instructions</h3>
+  <ol>
+    <li>Put a sudoku puzzle in the video frame</li>
+    <li>Press Go</li>
+    <li>Verify the digit recognition in the bottom image</li>
+    <li>Press Stop to solve and display the solution</li>
+  </ol>
+
+{% endblock about_text %}
+
+{% block content %}
+<div>
+  <video id="videoIn"></video>
+  <canvas id="videoDisplay"></canvas>
+</div>
+
+<div>
+  <canvas id="canvasPuzzle"></canvas>
+</div>
+
+<button id="go_btn" onclick="go();" disabled>Go</button>
+<button id="stop_btn" onclick="stop();">Stop</button>
+
+<script src="https://cdn.jsdelivr.net/npm/onnxruntime-web/dist/ort.min.js"></script>
+<script src="{% static 'DaveIsTheBest_base/sudoku_opencv.js' %}"></script>
+<script async src="https://docs.opencv.org/4.6.0/opencv.js" onload="ready();"></script>
+{% endblock content %}

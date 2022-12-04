@@ -8,8 +8,8 @@ class Home(TemplateView):
 class BJJ(TemplateView):
     template_name = 'DaveIsTheBest_base/BJJ.html'
 
-class SudokuOpenCVView(TemplateView):
-    template_name = 'DaveIsTheBest_base/sudoku_opencv.html'
+class SudokuSolverView(TemplateView):
+    template_name = 'DaveIsTheBest_base/sudoku_solver.html'
 
 class CommentFormView(RedirectView):
     http_method_names = ['post']

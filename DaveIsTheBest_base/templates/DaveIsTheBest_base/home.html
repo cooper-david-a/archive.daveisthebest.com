@@ -45,6 +45,13 @@
           <p>I started practicing Brazilian Jiu-Jitsu (BJJ) in July of 2019.</p>
         </div>
       </a>      
+      <a class="card" href="{% url 'sudoku_solver' %}">{% comment %} Sudoku Solver {% endcomment %}
+        <h2>Sudoku Solver</h2>
+        <div>
+          <img src="{% static 'DaveIsTheBest_base/Sudoku.png' %}" alt="Sudoku Solver">
+          <p>Computer vision based sudoku solver.</p>
+        </div>
+      </a>      
     </div>
   </div>
 {% endblock content %}
