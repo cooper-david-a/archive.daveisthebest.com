@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block headTag %}
-<link rel="stylesheet" href="{% static 'DaveIsTheBest_base/sudoku_opencv.css' %}">
+<link rel="stylesheet" href="{% static 'DaveIsTheBest_base/sudoku_solver.css' %}">
 {% endblock headTag %}
 
 {% block about_text %}
@@ -37,6 +37,6 @@
 <button id="stop_btn" onclick="stop();">Stop</button>
 
 <script src="https://cdn.jsdelivr.net/npm/onnxruntime-web/dist/ort.min.js"></script>
-<script src="{% static 'DaveIsTheBest_base/sudoku_opencv.js' %}"></script>
+<script src="{% static 'DaveIsTheBest_base/sudoku_solver.js' %}"></script>
 <script async src="https://docs.opencv.org/4.6.0/opencv.js" onload="ready();"></script>
 {% endblock content %}

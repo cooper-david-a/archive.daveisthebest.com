@@ -15,7 +15,7 @@ class CommentForm(ModelForm):
 class SignupForm(UserCreationForm):
     first_name = CharField()
     last_name = CharField()
-    email = EmailField()
+    email = EmailField(required=True)
     class Meta:
         model = User
         fields = ('username','password1','password2','first_name','last_name','email')
