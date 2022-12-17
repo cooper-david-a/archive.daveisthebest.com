@@ -22,16 +22,30 @@
             </div>
             <div id="contact_info">
                 <h3>Contact me</h3>
-                <a href="mailto:daveisthebest@protonmail.com">email</a>
+                <a href="mailto:dave@daveisthebest.com">email</a>
             </div>
         </div>
         <nav>
-            <a href="{% url 'home' %}" title="Home">
-                <strong>Home</strong>
-            </a>
-            <button id="header_expand_collapse_button" type="button" onclick="header_expand_collapse()">
-                <img src="{% static 'DaveIsTheBest_base/icons8-menu-24.png' %}" alt="About">			
-            </button>
+            <div id="links">
+                <a href="{% url 'home' %}" title="Home">
+                    <strong>Home</strong>
+                </a>
+                {% if user.is_authenticated %}
+                <a href="{% url 'logout' %}" title="logout">
+                    <strong>Log Out</strong>
+                </a>
+                {% else %}
+                <a href="{% url 'login' %}" title="login">
+                    <strong>Log In</strong>
+                </a>
+                {% endif %}
+            </div>
+            <div>
+                {% if user.is_authenticated %}<span> logged in as: {{user.username}}</span>{% endif %}
+                <button id="header_expand_collapse_button" type="button" onclick="header_expand_collapse()">
+                    <img src="{% static 'DaveIsTheBest_base/icons8-menu-24.png' %}" alt="About">			
+                </button>
+            </div>
         </nav>
     </header>
     {% block content %}

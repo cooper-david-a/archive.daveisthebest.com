@@ -1,5 +1,7 @@
-from django.forms import CharField, ModelForm, TextInput, Textarea
+from django.forms import CharField, ModelForm, TextInput, Textarea, EmailField
+from django.contrib.auth.forms import UserCreationForm
 from .models import Comment
+from django.contrib.auth.models import User
 
 class CommentForm(ModelForm):
     commenter_name = CharField(required=False, empty_value=None,                         
@@ -9,3 +11,11 @@ class CommentForm(ModelForm):
     class Meta:
         model = Comment
         fields = ['commenter_name', 'comment_text']
+
+class SignupForm(UserCreationForm):
+    first_name = CharField()
+    last_name = CharField()
+    email = EmailField()
+    class Meta:
+        model = User
+        fields = ('username','password1','password2','first_name','last_name','email')

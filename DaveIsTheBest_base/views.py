@@ -1,6 +1,8 @@
-from django.views.generic import TemplateView, RedirectView
+from django.views.generic import TemplateView, RedirectView, CreateView
 from django.contrib import messages
-from .forms import CommentForm
+from django.urls import reverse_lazy
+
+from .forms import CommentForm, SignupForm
 
 class Home(TemplateView):
     template_name = 'DaveIsTheBest_base/home.html'
@@ -23,4 +25,9 @@ class CommentFormView(RedirectView):
                 'Your comment was auto labeled as spam and will be reviewed manually.')
             return self.get(request, *args, **kwargs)
         else:
-            return self.get(request, *args, **kwargs)            
+            return self.get(request, *args, **kwargs)
+
+class SignUpView(CreateView):
+    form_class = SignupForm
+    success_url = reverse_lazy("login")
+    template_name = "registration/signup.html"

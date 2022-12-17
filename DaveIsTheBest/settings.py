@@ -36,6 +36,9 @@ ALLOWED_HOSTS = parser.get('hosts','ALLOWED_HOSTS').split(',')
 # Application definition
 
 INSTALLED_APPS = [
+    'DaveIsTheBest_base',
+    'HIIT_Timer',
+    'ThermoPropertyCalculator',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -44,9 +47,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.humanize',
     'debug_toolbar',
-    'DaveIsTheBest_base',
-    'HIIT_Timer',
-    'ThermoPropertyCalculator',
 ]
 
 MIDDLEWARE = [
@@ -113,13 +113,15 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+       'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
     },
     {
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
 
+LOGIN_REDIRECT_URL = "home"
+LOGOUT_REDIRECT_URL = "home"
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.1/topics/i18n/
@@ -140,3 +142,11 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'static'
+
+EMAIL_BACKEND = parser.get('email','EMAIL_BACKEND')
+DEFAULT_FROM_EMAIL = parser.get('email','DEFAULT_FROM_EMAIL')
+EMAIL_HOST = parser.get('email', 'EMAIL_HOST')
+EMAIL_PORT = 465
+EMAIL_USE_SSL = True
+EMAIL_HOST_USER = parser.get('email','EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = parser.get('email', 'EMAIL_HOST_PASSWORD')
