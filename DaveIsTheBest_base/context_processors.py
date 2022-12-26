@@ -1,4 +1,4 @@
-from django.db.models import Count
+from django.conf import settings
 from django.core.paginator import Paginator
 from .models import Comment
 from .forms import CommentForm
@@ -14,3 +14,6 @@ def comments_context_processor(request):
             'comments_count': comments_count, 
             'comment_form': comment_form, 
             'comment_page_obj': comment_page_obj}
+
+def base_context_processor(request):
+    return {'base_template':settings.BASE_APP + '/base.html'}

@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'DaveIsTheBest_base',
     'HIIT_Timer',
     'ThermoPropertyCalculator',
+    'Game_Map',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -48,6 +49,8 @@ INSTALLED_APPS = [
     'django.contrib.humanize',
     'debug_toolbar',
 ]
+
+BASE_APP = 'DaveIsTheBest_base'
 
 MIDDLEWARE = [
     'debug_toolbar.middleware.DebugToolbarMiddleware',
@@ -78,6 +81,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'DaveIsTheBest_base.context_processors.comments_context_processor',
+                'DaveIsTheBest_base.context_processors.base_context_processor',
             ],
         },
     },
@@ -97,7 +101,7 @@ DATABASES = {
         'PASSWORD': parser.get('database','DATABASE_PASSWORD'),
         'HOST': parser.get('database','DATABASE_HOST'),
         'PORT': parser.getint('database','DATABASE_PORT'),
-        'init_command': "SET sql_mode='STRICT_TRANS_TABLES'"
+        'OPTIONS':{'init_command': "SET sql_mode='STRICT_TRANS_TABLES'"}
     }
 }
 
@@ -120,6 +124,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+LOGIN_URL = "/users/login"
 LOGIN_REDIRECT_URL = "home"
 LOGOUT_REDIRECT_URL = "home"
 

@@ -1,0 +1,12 @@
+{% extends base_template %}
+{% load static %}
+
+{% block headTag %}
+    <link rel="stylesheet" href="{% static 'Game_Map/Game_Map.css' %}">
+{% endblock headTag %}
+
+{% block content %}
+    {% for position in object_list %}
+        <a href={% url 'position_detail' position.id %}> {{position.name}}</a>
+    {% endfor %}
+{% endblock content %}

@@ -26,4 +26,5 @@ urlpatterns = [
     path('', include('DaveIsTheBest_base.urls')),
     path('HIIT_Timer/', include('HIIT_Timer.urls')),
     path('ThermoPropertyCalculator/', include('ThermoPropertyCalculator.urls')),
+    path('Game_Map/', include('Game_Map.urls'))
 ]
