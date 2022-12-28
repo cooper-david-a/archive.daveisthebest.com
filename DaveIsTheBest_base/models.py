@@ -4,6 +4,7 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 from .apps import DaveisthebestBaseConfig
 
 class Comment(models.Model):
+    parent_comment = models.ForeignKey('self', on_delete=models.CASCADE, related_name='replies', null=True, blank=True)
     date_entered = models.DateTimeField(auto_now_add=True)
     commenter_name = models.CharField(max_length=127, null=True, blank=True)
     comment_text = models.CharField(max_length=255)

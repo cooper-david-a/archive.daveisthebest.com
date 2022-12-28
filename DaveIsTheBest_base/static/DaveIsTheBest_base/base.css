@@ -100,18 +100,22 @@ header nav a {
     width:100%;
 }
 
-#existing_comment_card {
+.existing_comment_card {
     margin: 20px;
     text-align: left;
     border-bottom: solid black 1px;
 }
 
-#existing_comment_card em{
+.existing_comment_card em{
     color: darkblue;
 }
 
-#existing_comment_card .comment_text{
+.existing_comment_card .comment_text{
     padding-left: 10px;
+}
+
+.replies{
+    display: none;
 }
 
 footer {

@@ -1,0 +1,19 @@
+{% load humanize %}
+
+{% for comment in comment_list %}
+        <div id=comment_card_{{comment.id}} class="{{class}} existing_comment_card">
+            <p>
+            {% if comment.commenter_name %}
+                <em>{{comment.commenter_name}}</em>,
+            {% else %}
+                    <em>Anonymous</em>, 
+            {% endif %}
+            {{comment.date_entered | naturaltime}}
+            </p>
+            <p class="comment_text">{{comment.comment_text}}</p>
+
+            {% if comment.replies.all %}                
+                {% include 'DaveIsTheBest_base/comment.html' with comment_list=comment.replies.all class="replies" %}
+            {% endif %}            
+        </div>
+{% endfor %}

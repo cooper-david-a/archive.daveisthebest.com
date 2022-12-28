@@ -52,6 +52,7 @@
     {% endblock content %}
     <h3>Comments</h3>
     <div id="comments_container">
+
         <div id="new_comment_form">
             <form action="{% url 'comments' %}" method="post">
                 {% csrf_token %}
@@ -59,6 +60,7 @@
                 <input type="submit" value="Post">
             </form>
         </div>        
+
         {% if messages %}
         <ul id="comment_messages">
             {% for message in messages %}
@@ -66,27 +68,21 @@
             {% endfor %}
         </ul>
         {% endif %}
+
         <h4>{{comments_count}} Comments</h4>
-        {% for comment in comment_page_obj %}
-            <div id="existing_comment_card">
-                <p>
-                {% if comment.commenter_name %}
-                    <em>{{comment.commenter_name}}</em>,
-                {% else %}
-                        <em>Anonymous</em>, 
-                {% endif %}
-                {{comment.date_entered | naturaltime}}
-                </p>
-                <p class="comment_text">{{comment.comment_text}}</p>
-            </div>
-        {% endfor %}
+
+        {% include 'DaveIsTheBest_base/comment.html' with comment_list=comment_page_obj.object_list %}
+
         {% if comment_page_obj.has_previous %}
-        <a href="?comment_page={{ comment_page_obj.previous_page_number }}">previous</a>
+            <a href="?comment_page={{ comment_page_obj.previous_page_number }}">previous</a>
         {% endif %}
+
         <p>Page {{ comment_page_obj.number }} of {{ comment_page_obj.paginator.num_pages }}</p>
+
         {% if comment_page_obj.has_next %}
             <a href="?comment_page={{ comment_page_obj.next_page_number }}">next</a>
         {% endif %}
+
     </div>
     <footer>
         <div id="footer_content">
