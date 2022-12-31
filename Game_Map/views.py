@@ -1,13 +1,16 @@
 from django.shortcuts import redirect
 from django.views.generic import ListView, DetailView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.db.models import Q
 from .models import Position
 
 # Create your views here.
 class PositionList(LoginRequiredMixin, ListView):
     model = Position
     def get_queryset(self):
-        return Position.objects.filter(profile__user=self.request.user) | Position.objects.filter(profile__user=None)
+        return Position.objects.filter(
+            Q(profile__user=self.request.user) | Q(profile=None)
+            )
 
 
 class PositionDetail(UserPassesTestMixin, DetailView):

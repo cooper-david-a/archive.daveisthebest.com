@@ -71,7 +71,9 @@
 
         <h4>{{comments_count}} Comments</h4>
 
-        {% include 'DaveIsTheBest_base/comment.html' with comment_list=comment_page_obj.object_list %}
+        {% for comment in comment_page_obj %}
+            {% include 'DaveIsTheBest_base/comment.html' with comment=comment comments_list=comments %}
+        {% endfor %}
 
         {% if comment_page_obj.has_previous %}
             <a href="?comment_page={{ comment_page_obj.previous_page_number }}">previous</a>

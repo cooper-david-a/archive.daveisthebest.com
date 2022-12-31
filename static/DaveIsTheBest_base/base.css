@@ -115,7 +115,7 @@ header nav a {
 }
 
 .replies{
-    display: none;
+    display: auto;
 }
 
 footer {
