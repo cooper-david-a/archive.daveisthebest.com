@@ -1,7 +1,7 @@
 {% load humanize %}
 {% load index %}
 
-<div id=comment_card_{{comment.id}} class="{{class}} existing_comment_card">
+<div id="comment_card_{{comment.id}}" class="{{class}} existing_comment_card">
     <p>
         {% if comment.commenter_name %}
             <em>{{comment.commenter_name}}</em>,
@@ -12,8 +12,36 @@
     </p>
     <p class="comment_text">{{comment.comment_text}}</p>
 
-    {% for reply_id in comment.replies__id %}
-        {% include 'DaveIsTheBest_base/comment.html' with comment=comments_list|index:reply_id comments_list=comments_list class="replies" %}
-    {% endfor %}
+    <button id="show_hide_reply_form_button_{{comment.id}}" type="button" onclick="show_hide_reply_form({{comment.id}});">
+        Reply?
+    </button>
+
+    <div id="show_hide_reply_form_{{comment.id}}" class="reply_form" style="display: none;">
+        <form action="{% url 'comments' id=comment.id %}" method="post">
+            {% csrf_token %}
+            {{comment_form.as_p}}
+            <input type="submit" value="Post">
+        </form>
+    </div>
+
+    {% if comment.replies__id|length > 0 %}
+        <p> 
+            {{comment.replies__id|length}} Repl{{comment.replies__id|length|pluralize:"y,ies"}}
+            <button id="show_hide_replies_button_{{comment.id}}" 
+                type="button" 
+                onclick="show_hide_replies({{comment.id}},{{comment.replies__id|length}});">
+
+                Show Repl{{comment.replies__id|length|pluralize:"y,ies"}}
+                
+            </button>
+        </p>
+    {% endif %}
+
+
+    <div id="comment_{{comment.id}}_replies" style="display : none;">
+        {% for reply_id in comment.replies__id %}            
+            {% include 'DaveIsTheBest_base/comment.html' with comment=comments_list|index:reply_id comments_list=comments_list class="replies" form=form %}
+        {% endfor %}
+    </div>
 
 </div>

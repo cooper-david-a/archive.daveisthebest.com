@@ -53,8 +53,8 @@
     <h3>Comments</h3>
     <div id="comments_container">
 
-        <div id="new_comment_form">
-            <form action="{% url 'comments' %}" method="post">
+        <div class="new_comment_form">
+            <form action="{% url 'comments' id=0 %}" method="post">
                 {% csrf_token %}
                 {{comment_form.as_p}}
                 <input type="submit" value="Post">

@@ -1,13 +1,14 @@
-from django.forms import CharField, ModelForm, TextInput, Textarea, EmailField
+from django.forms import CharField, ModelForm, TextInput, Textarea, EmailField, ModelChoiceField, HiddenInput
 from django.contrib.auth.forms import UserCreationForm
-from .models import Comment
 from django.contrib.auth.models import User
+
+from .models import Comment
 
 class CommentForm(ModelForm):
     commenter_name = CharField(required=False, empty_value=None,                         
                            widget=TextInput(attrs={'placeholder': 'Name (optional)'}))
 
-    comment_text = CharField(widget=Textarea(attrs={'title': '', 'rows': 2}))
+    comment_text = CharField(widget=Textarea(attrs={'title': '', 'rows': 1}))
     class Meta:
         model = Comment
         fields = ['commenter_name', 'comment_text']

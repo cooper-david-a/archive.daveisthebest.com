@@ -22,7 +22,7 @@ def comments_context_processor(request):
                 'date_entered' : comment['date_entered'],
                 'commenter_name' : comment['commenter_name'],
                 'comment_text' : comment['comment_text'],
-                'replies__id' : [comment['replies__id']] if comment['replies__id'] is not None else []
+                'replies__id' : [comment['replies__id']] if comment['replies__id'] in comments else []
             }
         else:
             comments[comment['id']]['replies__id'].append(comment['replies__id'])
