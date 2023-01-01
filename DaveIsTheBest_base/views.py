@@ -16,12 +16,22 @@ class SudokuSolverView(TemplateView):
 
 class CommentFormView(RedirectView):
     http_method_names = ['post']
+
     def post(self, request, *args, **kwargs):
-        self.url = request.META['HTTP_REFERER'] + r'#new_comment_form'
+
+        if kwargs['id'] == 0:
+            self.url = request.META['HTTP_REFERER'] + r'#new_comment_form'
+        else:
+            self.url = request.META['HTTP_REFERER'] + f"#comment_card_{kwargs['id']}"
+
         form = CommentForm(request.POST)
+
         if form.is_valid():
-            comment = form.save(commit=False)     
-            comment.parent_comment = Comment.objects.get(id=kwargs['id'])
+            comment = form.save(commit=False)
+
+            if kwargs['id'] > 0:
+                comment.parent_comment = Comment.objects.get(id=kwargs['id'])
+
             comment.save()
 
             if form.instance.auto_is_spam:
