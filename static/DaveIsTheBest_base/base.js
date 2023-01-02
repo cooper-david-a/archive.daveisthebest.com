@@ -1,3 +1,18 @@
+if (window.location.href.includes('#comment_card_')) {
+  let focus_comment_id = window.location.href.split('#comment_card_')[1];
+  let focus_comment_div = document.getElementById(`comment_card_${focus_comment_id}`);
+  let parents = [];
+
+  do {
+    parents.push(focus_comment_div)
+    focus_comment_div = focus_comment_div.parentElement;
+  } while (focus_comment_div)
+
+  highest_level_comment_index = parents.reverse().findIndex((e) => e.classList.contains("existing_comment_card"));
+
+  parents[highest_level_comment_index].querySelectorAll('.show_hide_replies_button').forEach((button) => button.onclick());
+} 
+
 let header_collapsed = true;
 
 function header_expand_collapse(){
@@ -41,7 +56,7 @@ function show_hide_replies(parent_comment_id,n) {
 }
 
 function show_hide_reply_form(parent_comment_id) {
-  let form = document.getElementById(`show_hide_reply_form_${parent_comment_id}`);
+  let form = document.getElementById(`reply_form_${parent_comment_id}`);
 
   if (form.style.display == "none") {
 

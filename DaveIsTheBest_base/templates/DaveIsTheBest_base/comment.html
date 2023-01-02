@@ -12,11 +12,22 @@
     </p>
     <p class="comment_text">{{comment.comment_text}}</p>
 
+    {% if comment.replies__id|length > 0 %}
+
+        {{comment.replies__id|length}} Repl{{comment.replies__id|length|pluralize:"y,ies"}}
+
+        <button id="show_hide_replies_button_{{comment.id}}" class="show_hide_replies_button"
+            type="button" 
+            onclick="show_hide_replies({{comment.id}},{{comment.replies__id|length}});">
+            Show Replies            
+        </button>
+    {% endif %}
+
     <button id="show_hide_reply_form_button_{{comment.id}}" type="button" onclick="show_hide_reply_form({{comment.id}});">
         Reply?
     </button>
 
-    <div id="show_hide_reply_form_{{comment.id}}" class="reply_form" style="display: none;">
+    <div id="reply_form_{{comment.id}}" class="reply_form" style="display: none;">
         <form action="{% url 'comments' id=comment.id %}" method="post">
             {% csrf_token %}
             {{comment_form.as_p}}
@@ -24,18 +35,6 @@
         </form>
     </div>
 
-    {% if comment.replies__id|length > 0 %}
-        <p> 
-            {{comment.replies__id|length}} Repl{{comment.replies__id|length|pluralize:"y,ies"}}
-            <button id="show_hide_replies_button_{{comment.id}}" 
-                type="button" 
-                onclick="show_hide_replies({{comment.id}},{{comment.replies__id|length}});">
-
-                Show Repl{{comment.replies__id|length|pluralize:"y,ies"}}
-                
-            </button>
-        </p>
-    {% endif %}
 
 
     <div id="comment_{{comment.id}}_replies" style="display : none;">
