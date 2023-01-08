@@ -36,9 +36,6 @@ ALLOWED_HOSTS = parser.get('hosts','ALLOWED_HOSTS').split(',')
 # Application definition
 
 INSTALLED_APPS = [
-    'DaveIsTheBest_base',
-    'HIIT_Timer',
-    'ThermoPropertyCalculator',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -47,6 +44,10 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.humanize',
     'debug_toolbar',
+    'DaveIsTheBest_base',
+    'HIIT_Timer',
+    'ThermoPropertyCalculator',
+    'filesharing',
 ]
 
 BASE_APP = 'DaveIsTheBest_base'
@@ -146,6 +147,9 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'static'
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
 
 EMAIL_BACKEND = parser.get('email','EMAIL_BACKEND')
 DEFAULT_FROM_EMAIL = parser.get('email','DEFAULT_FROM_EMAIL')
