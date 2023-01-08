@@ -1,3 +1,6 @@
-RewriteCond %{REQUEST_URI} ^/stats/(.*)$ [OR]
-RewriteCond %{REQUEST_URI} ^/failed_auth.html$
-RewriteRule ^.*$ - [L]
+<IfModule mod_rewrite.c>
+RewriteEngine On
+RewriteBase /
+RewriteCond %{REQUEST_URI} ^/(stats|failed_auth\.html).*$ [NC]
+RewriteRule . - [L]
+</IfModule>
