@@ -1,5 +1,7 @@
 __pycache__/
 
+media/
+
 passenger_wsgi.py
 
 tailwindcss/

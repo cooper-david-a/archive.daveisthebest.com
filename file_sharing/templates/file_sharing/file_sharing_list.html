@@ -1,0 +1,9 @@
+{% extends base_template %}
+{% load static %}
+{% block headTag %}
+{% endblock headTag %}
+{% block content %}
+    {% for file in object_list %}
+        <p>{{file.file_name}}</p>
+    {% endfor %}
+{% endblock content %}
