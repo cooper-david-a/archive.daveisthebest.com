@@ -8,6 +8,7 @@ from .models import SharedFile, Profile
 # Create your views here.
 
 class FileSharingListView(LoginRequiredMixin, ListView):
+    model = SharedFile
     template_name = 'file_sharing/file_sharing_list.html'    
 
 def file_download(request, file_id):
