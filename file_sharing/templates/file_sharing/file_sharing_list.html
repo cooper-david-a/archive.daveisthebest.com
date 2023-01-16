@@ -9,12 +9,14 @@
             <th>From</th>
             <th>description</th>
             <th>link</th>
+            <th>size</th>
         </tr>
     {% for file_obj in object_list %}
         <tr>
             <td>{{file_obj.profile}}</td>
             <td>{{file_obj.description}}</td>
             <td><a href="{% url 'file_download' file_id=file_obj.id %}">{{file_obj.filename}}</a></td>
+            <td>{{file_obj.file.size|filesizeformat}}</td>
         </tr>
     {% endfor %}
     </table>
