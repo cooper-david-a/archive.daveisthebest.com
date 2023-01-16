@@ -26,5 +26,5 @@ urlpatterns = [
     path('', include('DaveIsTheBest_base.urls')),
     path('HIIT_Timer/', include('HIIT_Timer.urls')),
     path('ThermoPropertyCalculator/', include('ThermoPropertyCalculator.urls')),
-    path('file_sharing', include('file_sharing.urls')),
+    path('file_sharing/', include('file_sharing.urls')),
 ]
