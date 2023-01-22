@@ -1,4 +1,4 @@
-from django.forms import CharField, ModelForm, TextInput, Textarea, EmailField, ModelChoiceField, HiddenInput
+from django.forms import CharField, ModelForm, TextInput, Textarea, EmailField
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 

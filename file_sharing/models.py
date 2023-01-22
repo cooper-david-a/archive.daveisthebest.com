@@ -1,4 +1,4 @@
-import os
+import os, uuid
 from django.db import models
 from django.conf import settings
 
@@ -25,10 +25,7 @@ class SharedFile(models.Model):
         else:
             raise FileNotFoundError('FieldFile not found')
 
-
-
-            
-
 class AccessEmail(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     file = models.ForeignKey(SharedFile, on_delete=models.CASCADE, related_name='access_emails')
     email = models.EmailField(max_length=70)
