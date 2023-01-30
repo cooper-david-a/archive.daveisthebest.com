@@ -14,7 +14,7 @@ class SharedFile(models.Model):
     date_uploaded = models.DateTimeField(auto_now_add=True)
     description = models.CharField(max_length=100)
     profile = models.ForeignKey(Profile, on_delete=models.CASCADE)
-    file = models.FileField(upload_to='file_sharing/')
+    file = models.FileField(upload_to='file_sharing/') 
 
     def filename(self):
         return os.path.basename(self.file.name)
