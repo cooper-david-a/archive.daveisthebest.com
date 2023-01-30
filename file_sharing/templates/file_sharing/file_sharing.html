@@ -1,0 +1,58 @@
+{% extends base_template %}
+{% load static %}
+{% block headTag %}
+    <link rel="stylesheet" href="{% static 'file_sharing/file_sharing.css' %}">
+    <script defer src="{% static 'file_sharing/file_sharing.js' %}"></script>
+{% endblock headTag %}
+{% block content %}
+    <form id="new_file_form" action="." method="post" enctype="multipart/form-data">
+        <h2>Upload New File</h2>
+        {% csrf_token %}        
+        <p>
+            {{ shared_file_upload_form.description.label_tag }}
+            {{ shared_file_upload_form.description }}
+        </p>
+        <p> {{ shared_file_upload_form.description.errors }} </p>
+        <p>{{ shared_file_upload_form.file }}</p>
+        <p> {{ shared_file_upload_form.file.errors }} </p>
+            {{ access_email_formset.management_form }}
+            {{ access_email_formset.non_form_errors }}
+            <table id="access_emails_table">
+                {% for access_email_form in access_email_formset %}
+                    <tr>
+                        <td>
+                            {{ access_email_form.email.label_tag }}
+                            {{ access_email_form.email }}
+                        </td>
+                        <td>
+                            <button id="delete_button_{{access_email_form.prefix}}" type="button" onclick="deleteEmail('{{access_email_form.prefix}}')">Delete</button>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </table>
+            <button type="button" onclick="addEmail()">Add Email</button>
+        </fieldset>
+        <input type="submit" value="Save"/>
+        {{ form.errors }}
+    </form>
+    <table id="file_sharing_list_table">
+        <tr>
+            <th>From</th>
+            <th>description</th>
+            <th>link</th>
+            <th>size</th>
+            <th>edit</th>
+            <th>delete</th>
+        </tr>
+    {% for file_obj in object_list %}
+        <tr>
+            <td>{{file_obj.profile}}</td>
+            <td>{{file_obj.description}}</td>
+            <td><a href="{% url 'file_download' file_id=file_obj.id %}">{{file_obj.filename}}</a></td>
+            <td>{{file_obj.file.size|filesizeformat}}</td>
+            <td></td>
+            <td></td>
+        </tr>
+    {% endfor %}
+    </table>
+{% endblock content %}

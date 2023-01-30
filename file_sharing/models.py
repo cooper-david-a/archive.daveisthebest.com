@@ -1,6 +1,7 @@
 import os, uuid
 from django.db import models
 from django.conf import settings
+from django.core.mail import send_mail
 
 # Create your models here.
 
@@ -24,8 +25,19 @@ class SharedFile(models.Model):
             super().delete()
         else:
             raise FileNotFoundError('FieldFile not found')
+    
+    def save(self):
+        super().save()        
 
 class AccessEmail(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     file = models.ForeignKey(SharedFile, on_delete=models.CASCADE, related_name='access_emails')
     email = models.EmailField(max_length=70)
+
+    def save(self):
+        super().save()
+        email_from = None
+        email_to = [self.email]
+        subject = f'{self.file.profile.user.email} sent you a file'
+        message = r'link: https://daveisthebest.com/file_sharing/' + f'{self.id}'
+        send_mail(subject, message, email_from, email_to, fail_silently=False)
