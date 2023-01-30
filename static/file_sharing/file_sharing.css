@@ -1,0 +1,26 @@
+#new_file_form {
+    border: 1px solid black;
+    width: 50%;
+    max-width: 500px;
+    min-width: 300px;
+    margin: auto;
+    padding: 20px;
+}
+
+#new_file_form textarea {
+    width: 75%;
+}
+
+table, th, td {
+    border: 1px solid black;
+    border-collapse: collapse;
+    padding: 10px;
+}
+
+table{
+    margin:auto;
+}
+
+#file_sharing_list_table {
+    margin-top: 15px;
+}
