@@ -51,6 +51,7 @@ INSTALLED_APPS = [
 ]
 
 BASE_APP = 'DaveIsTheBest_base'
+AUTH_USER_MODEL = BASE_APP + '.User'
 
 MIDDLEWARE = [
     'debug_toolbar.middleware.DebugToolbarMiddleware',
