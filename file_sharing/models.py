@@ -3,6 +3,8 @@ from django.db import models
 from django.conf import settings
 from django.core.mail import send_mail
 
+from .validators import validate_file_size
+
 # Create your models here.
 
 class Profile(models.Model):
@@ -11,10 +13,11 @@ class Profile(models.Model):
         return self.user.username
 
 class SharedFile(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     date_uploaded = models.DateTimeField(auto_now_add=True)
     description = models.CharField(max_length=100)
     profile = models.ForeignKey(Profile, on_delete=models.CASCADE)
-    file = models.FileField(upload_to='file_sharing/') 
+    file = models.FileField(upload_to='file_sharing/', validators=[validate_file_size]) 
 
     def filename(self):
         return os.path.basename(self.file.name)

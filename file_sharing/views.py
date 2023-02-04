@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.http import HttpResponse, HttpResponseRedirect
-from django.views.generic import CreateView
+from django.views.generic import CreateView, TemplateView
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Q
 from .models import SharedFile, Profile, AccessEmail
@@ -50,16 +51,20 @@ class FileSharingView(LoginRequiredMixin, CreateView):
             self.get_context_data(shared_file_upload_form=shared_file_upload_form,
                                   access_email_formset=access_email_formset))
 
+class FileSharingFromLinkView(TemplateView):
+    template_name = 'file_sharing/file_sharing.html'
+    http_method_names = ['get']
+
+    def get(self, request, *args, **kwargs):
+        self.object = None
+        access_email = AccessEmail.objects.get(id=kwargs['access_email_id'])
+        return self.render_to_response(
+            self.get_context_data(object_list = [access_email.file])
+            )
+
+@login_required
 def file_download(request, file_id):
     file_obj = SharedFile.objects.get(id=file_id)
-    socket = open(settings.MEDIA_ROOT / file_obj.file.name,'rb')
-    response = HttpResponse(socket)
-    response['Content-Disposition'] = "attachment; filename=" + file_obj.filename()
-    return response
-
-def file_download_from_link(request, access_email_id):
-    access_email = AccessEmail.objects.get(id=access_email_id)
-    file_obj = access_email.file
     socket = open(settings.MEDIA_ROOT / file_obj.file.name,'rb')
     response = HttpResponse(socket)
     response['Content-Disposition'] = "attachment; filename=" + file_obj.filename()

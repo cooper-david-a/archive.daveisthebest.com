@@ -5,18 +5,19 @@
     <script defer src="{% static 'file_sharing/file_sharing.js' %}"></script>
 {% endblock headTag %}
 {% block content %}
-    <form id="new_file_form" action="." method="post" enctype="multipart/form-data">
-        <h2>Upload New File</h2>
-        {% csrf_token %}        
-        <p>
-            {{ shared_file_upload_form.description.label_tag }}
-            {{ shared_file_upload_form.description }}
-        </p>
-        <p> {{ shared_file_upload_form.description.errors }} </p>
-        <p>{{ shared_file_upload_form.file }}</p>
-        <p> {{ shared_file_upload_form.file.errors }} </p>
-            {{ access_email_formset.management_form }}
-            {{ access_email_formset.non_form_errors }}
+    {% if shared_file_upload_form %}
+        <form id="new_file_form" action="." method="post" enctype="multipart/form-data">
+            <h2>Upload New File</h2>
+            {% csrf_token %}        
+            <p>
+                {{ shared_file_upload_form.description.label_tag }}
+                {{ shared_file_upload_form.description }}
+            </p>
+            <p> {{ shared_file_upload_form.description.errors }} </p>
+            <p>{{ shared_file_upload_form.file }}</p>
+            <p> {{ shared_file_upload_form.file.errors }} </p>
+                {{ access_email_formset.management_form }}
+                {{ access_email_formset.non_form_errors }}
             <table id="access_emails_table">
                 {% for access_email_form in access_email_formset %}
                     <tr>
@@ -31,10 +32,10 @@
                 {% endfor %}
             </table>
             <button type="button" onclick="addEmail()">Add Email</button>
-        </fieldset>
-        <input type="submit" value="Save"/>
-        {{ form.errors }}
-    </form>
+            <input type="submit" value="Save"/>
+        </form>
+    {% endif %}
+        
     <table id="file_sharing_list_table">
         <tr>
             <th>From</th>
