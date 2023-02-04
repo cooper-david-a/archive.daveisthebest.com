@@ -1,6 +1,6 @@
 from django.conf import settings
 from django.http import HttpResponse, HttpResponseRedirect
-from django.views.generic import CreateView, TemplateView
+from django.views.generic import CreateView, DetailView
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Q
@@ -11,6 +11,7 @@ from .forms import SharedFileUploadForm, AccessEmailFormSet
 
 class FileSharingView(LoginRequiredMixin, CreateView):
     model = SharedFile
+    context_object_name = 'shared_file_list'
     template_name = 'file_sharing/file_sharing.html'
     form_class = SharedFileUploadForm
     success_url = '.'
@@ -20,9 +21,14 @@ class FileSharingView(LoginRequiredMixin, CreateView):
         shared_file_upload_form_class = self.get_form_class()
         shared_file_upload_form = self.get_form(form_class=shared_file_upload_form_class)
         access_email_formset = AccessEmailFormSet()
-        object_list = SharedFile.objects.filter(Q(profile__user_id = request.user.id) | Q(profile__user__email = request.user.email)).prefetch_related()
+
+        if request.user.is_staff:
+            shared_file_list = SharedFile.objects.all()
+        else:
+            shared_file_list = SharedFile.objects.filter(Q(profile__user_id = request.user.id) | Q(access_emails__email = request.user.email)).prefetch_related()
+
         return self.render_to_response(
-            self.get_context_data(object_list = object_list,
+            self.get_context_data(shared_file_list = shared_file_list,
                 shared_file_upload_form=shared_file_upload_form,
                 access_email_formset=access_email_formset
                 )
@@ -51,18 +57,12 @@ class FileSharingView(LoginRequiredMixin, CreateView):
             self.get_context_data(shared_file_upload_form=shared_file_upload_form,
                                   access_email_formset=access_email_formset))
 
-class FileSharingFromLinkView(TemplateView):
-    template_name = 'file_sharing/file_sharing.html'
-    http_method_names = ['get']
+class FileSharingDetailView(DetailView):
+    model = SharedFile
+    template_name = 'file_sharing/file_sharing_detail.html'
+    context_object_name = 'shared_file'
 
-    def get(self, request, *args, **kwargs):
-        self.object = None
-        access_email = AccessEmail.objects.get(id=kwargs['access_email_id'])
-        return self.render_to_response(
-            self.get_context_data(object_list = [access_email.file])
-            )
 
-@login_required
 def file_download(request, file_id):
     file_obj = SharedFile.objects.get(id=file_id)
     socket = open(settings.MEDIA_ROOT / file_obj.file.name,'rb')

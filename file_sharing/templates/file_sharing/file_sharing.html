@@ -19,6 +19,9 @@
                 {{ access_email_formset.management_form }}
                 {{ access_email_formset.non_form_errors }}
             <table id="access_emails_table">
+                    <tr>
+                        <th colspan="2">Send To: <button type="button" onclick="addEmail()">Add Email</button> </th>
+                    </tr>
                 {% for access_email_form in access_email_formset %}
                     <tr>
                         <td>
@@ -30,9 +33,8 @@
                         </td>
                     </tr>
                 {% endfor %}
-            </table>
-            <button type="button" onclick="addEmail()">Add Email</button>
-            <input type="submit" value="Save"/>
+            </table>            
+            <input id="save_file_button" type="submit" value="Save"/>
         </form>
     {% endif %}
         
@@ -45,9 +47,9 @@
             <th>edit</th>
             <th>delete</th>
         </tr>
-    {% for file_obj in object_list %}
+    {% for file_obj in shared_file_list %}
         <tr>
-            <td>{{file_obj.profile}}</td>
+            <td><a href="mailto:{{file_obj.profile.user.email}}">{{file_obj.profile.user.email}}</a></td>
             <td>{{file_obj.description}}</td>
             <td><a href="{% url 'file_download' file_id=file_obj.id %}">{{file_obj.filename}}</a></td>
             <td>{{file_obj.file.size|filesizeformat}}</td>

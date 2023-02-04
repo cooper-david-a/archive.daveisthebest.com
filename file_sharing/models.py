@@ -42,5 +42,5 @@ class AccessEmail(models.Model):
         email_from = None
         email_to = [self.email]
         subject = f'{self.file.profile.user.email} sent you a file'
-        message = r'link: https://daveisthebest.com/file_sharing/' + f'{self.id}'
+        message = r'link: https://daveisthebest.com/file_sharing/' + f'{self.file.id}'
         send_mail(subject, message, email_from, email_to, fail_silently=False)

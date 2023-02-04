@@ -4,6 +4,4 @@ media/
 
 passenger_wsgi.py
 
-tailwindcss/
-
 .vscode/
