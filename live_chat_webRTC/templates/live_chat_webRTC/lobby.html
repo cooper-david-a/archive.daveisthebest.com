@@ -1,0 +1,14 @@
+{% extends base_template %}
+
+{% load static %}
+
+{% block headTag %}
+{% endblock headTag %}
+    
+{% block content %}
+<form action="." method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <input type="submit" value="Create Room">
+</form>
+{% endblock content %}

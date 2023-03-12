@@ -27,4 +27,5 @@ urlpatterns = [
     path('HIIT_Timer/', include('HIIT_Timer.urls')),
     path('ThermoPropertyCalculator/', include('ThermoPropertyCalculator.urls')),
     path('file_sharing/', include('file_sharing.urls')),
+    path('live_chat/', include('live_chat_webRTC.urls')),
 ]

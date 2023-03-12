@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'HIIT_Timer',
     'ThermoPropertyCalculator',
     'file_sharing',
+    'live_chat_webRTC',
 ]
 
 BASE_APP = 'DaveIsTheBest_base'
