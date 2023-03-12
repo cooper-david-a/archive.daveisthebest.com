@@ -85,7 +85,7 @@ function waitForAllICE(peerConnection) {
     return waitForEvent(
         (fulfill) => {
             peerConnection.onicecandidate = (iceEvent) => {
-                if (iceEvent.candidate === null) {
+                if (!iceEvent.candidate) {
                     fulfill()
             }
         }
@@ -94,8 +94,8 @@ function waitForAllICE(peerConnection) {
 
 function waitForEvent(user_function, delay = 30000) {
     return new Promise((fulfill, reject) => {
-        user_function(fulfill)
-        setTimeout(() => reject("Waited too long"), delay)
+        user_function(fulfill);
+        setTimeout(() => reject("Waited too long"), delay);
     })
 }
 
