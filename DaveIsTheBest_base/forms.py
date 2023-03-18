@@ -1,8 +1,6 @@
 from django.forms import CharField, ModelForm, TextInput, Textarea, EmailField
 from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth.models import User
-
-from .models import Comment
+from .models import Comment, User
 
 class CommentForm(ModelForm):
     commenter_name = CharField(required=False, empty_value=None,                         

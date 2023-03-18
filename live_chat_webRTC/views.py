@@ -3,7 +3,7 @@ import json
 from django.urls import reverse
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
-from django.views.generic import CreateView, TemplateView
+from django.views.generic import CreateView, DetailView
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.mixins import LoginRequiredMixin
 
@@ -12,8 +12,10 @@ from .models import Room, Profile
 from .forms import LobbyForm
 
 
-class LiveChatRoomView(TemplateView):
+class LiveChatRoomView(DetailView):
+    model = Room
     template_name = 'live_chat_webRTC/room.html'
+    context_object_name = 'room'
 
 class LiveChatLobbyView(LoginRequiredMixin, CreateView):
     model = Room
@@ -33,8 +35,9 @@ class LiveChatLobbyView(LoginRequiredMixin, CreateView):
 
 
 @csrf_exempt
-def post_sdp(request, room_id):
-    room = Room.objects.get(pk=room_id)
+def post_sdp(request, pk):
+
+    room = Room.objects.get(pk=pk)
 
     if request.method == 'PUT':
         body = json.loads(request.body.decode())
@@ -47,7 +50,6 @@ def post_sdp(request, room_id):
         room.save()
     
     if request.method == 'GET':
-        response = JsonResponse({'offer':room.offer,'answer':room.answer})
-        
+        response = JsonResponse({'offer':room.offer,'answer':room.answer})       
 
     return response

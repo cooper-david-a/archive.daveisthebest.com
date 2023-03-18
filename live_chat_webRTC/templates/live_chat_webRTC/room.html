@@ -2,8 +2,13 @@
 {% load static %}
 {% block headTag %}
     <link rel="stylesheet" href="{% static 'live_chat_webRTC/room.css' %}">
+    <script>let room_name = '{{ room.name }}';</script>
+    {% if room.created_by.user == user %}
+        <script>let isRoomCreator = true;</script>
+    {% else %}
+        <script> let isRoomCreator = false;</script>
+    {% endif %}    
     <script defer src="{% static 'live_chat_webRTC/room.js' %}"></script>
-    <script>let room_name = '{{ room_name }}';</script>
     {% comment %}
         {% csrf_token %}
     {% endcomment %}
@@ -12,12 +17,11 @@
 {% block content %}
     <div id="live-chat-container">
         <div id="videos">
-            <video class="video-player" id="user-1" autoplay playsinline></video>
             <video class="video-player" id="user-2" autoplay playsinline></video>
+            <video class="video-player" id="user-1" autoplay playsinline muted></video>
         </div>
 
-        <div id="controls">
-
+        <div id="controls">         
             <div class="controls-container" id="camera-btn">
                 <img src="{% static 'live_chat_webRTC/camera.png' %}"/>
             </div>
@@ -25,7 +29,6 @@
             <div class="controls-container" id="mic-btn">
                 <img src="{% static 'live_chat_webRTC/mic.png' %}"/>
             </div>
-
         </div>
     </div>
 {% endblock content %}

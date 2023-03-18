@@ -4,4 +4,4 @@ from .models import Room
 class LobbyForm(ModelForm):
     class Meta:
         model = Room
-        fields = ('name',)
+        fields = ('name', 'invitee_email')
