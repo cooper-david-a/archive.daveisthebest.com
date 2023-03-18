@@ -1,4 +1,4 @@
-const servers = {
+const configuration = {
     iceServers: [
         {
             urls: ['stun:stun1.l.google.com:19302', 'stun:stun2.l.google.com:19302']
@@ -7,41 +7,71 @@ const servers = {
 }
 
 const csrftoken = getCookie('csrftoken');
-let peerConnection = new RTCPeerConnection(servers)
+let peerConnection = new RTCPeerConnection(configuration);
 let localStream;
 let remoteStream;
 let sdpData;
-
+let connected = false;
+const user1 = document.getElementById('user-1');
+const user2 = document.getElementById('user-2');
 
 let constraints = {
-    video: true,
+    video: {
+        width: { min: 640, ideal: 1920, max: 1920 },
+        height: { min: 480, ideal: 1080, max: 1080 },
+    },
     audio: true
 }
 
 let init = async () => {
     localStream = await navigator.mediaDevices.getUserMedia(constraints)
     remoteStream = new MediaStream()
-    document.getElementById('user-1').srcObject = localStream
-    document.getElementById('user-2').srcObject = remoteStream
+    user1.srcObject = localStream
+    user2.srcObject = remoteStream
 
     localStream.getTracks().forEach((track) => {
         peerConnection.addTrack(track, localStream);
     });
 
+    peerConnection.onconnectionstatechange = (event) => {
+        switch (peerConnection.connectionState) {
+            case "new":
+            case "checking":
+            case "connected":
+                user1.classList.add('small-frame');
+                user2.style.display = 'block';
+                break;
+            case "disconnected":
+                user1.classList.remove('small-frame');
+                user2.style.display = 'none';
+                break;
+            case "closed":
+            case "failed":
+            default:
+        }
+    }
+
     peerConnection.ontrack = (event) => {
-        event.streams[0].getTracks().forEach((track) => {
-            remoteStream.addTrack(track);
-        });
+        event.streams[0].getTracks().forEach((track) => { remoteStream.addTrack(track); });
+        user1.classList.add('small-frame');
+        user2.style.display = 'block';
     };
+
+    if (isRoomCreator) {
+        createOffer();        
+    } else {
+        createAnswer();        
+    }
+
 }
 
 let createOffer = async () => {
 
     const offer = await peerConnection.createOffer();
     await peerConnection.setLocalDescription(offer);
-    await waitForAllICE(peerConnection);        
-    console.log(offer);
+    await waitForAllICE(peerConnection);
     await postSdp(peerConnection.localDescription);
+    setTimeout(addAnswer, 5000);
 }
 
 let createAnswer = async () => {
@@ -51,13 +81,6 @@ let createAnswer = async () => {
     await peerConnection.setLocalDescription(answer);
     await waitForAllICE(peerConnection);
     await postSdp(peerConnection.localDescription);
-}
-
-let addAnswer = async () => {
-    await retrieveSdp();
-    if (!peerConnection.currentRemoteDescription) {
-        peerConnection.setRemoteDescription(sdpData.answer);
-    }
 }
 
 let postSdp = async (localDescription) => {
@@ -70,22 +93,23 @@ let postSdp = async (localDescription) => {
             },
             body: JSON.stringify(localDescription)
         }
-    ).then((res) => res.json())
+    )
+        .then((res) => res.json())
         .then((data) => console.log(data))
+        .catch((error) => console.log(error))
 }
 
 let retrieveSdp = async () => {
-    await fetch(
-        window.location + '/sdp',
-        { method: 'GET' })
-        .then((res) => res.json()).then((data) => { sdpData = data; })
+    await fetch(window.location + '/sdp', { method: 'GET' })
+        .then((res) => res.json())
+        .then((data) => { sdpData = data; })
 }
 
 function waitForAllICE(peerConnection) {
     return waitForEvent(
         (fulfill) => {
             peerConnection.onicecandidate = (iceEvent) => {
-                if (iceEvent.candidate === null) {
+                if (!iceEvent.candidate) {
                     fulfill()
             }
         }
@@ -94,8 +118,8 @@ function waitForAllICE(peerConnection) {
 
 function waitForEvent(user_function, delay = 30000) {
     return new Promise((fulfill, reject) => {
-        user_function(fulfill)
-        setTimeout(() => reject("Waited too long"), delay)
+        user_function(fulfill);
+        setTimeout(() => reject("Waited too long"), delay);
     })
 }
 
@@ -139,9 +163,23 @@ function getCookie(name) {
     return cookieValue;
 }
 
+let handleUserLeft = () => {
+    document.getElementById('user-2').style.display = 'none'
+    document.getElementById('user-1').classList.remove('smallFrame')
+}
+
+async function addAnswer() {
+    await retrieveSdp();
+    if (sdpData.answer) {
+        if (!peerConnection.currentRemoteDescription) {
+            peerConnection.setRemoteDescription(sdpData.answer);
+        }
+        return;
+    } else setTimeout(addAnswer, 2000)
+}
+
 document.getElementById('camera-btn').addEventListener('click', toggleCamera)
 document.getElementById('mic-btn').addEventListener('click', toggleMic)
-// document.getElementById('create-offer').addEventListener('click', createOffer)
 // document.getElementById('create-answer').addEventListener('click', createAnswer)
 // document.getElementById('add-answer').addEventListener('click', addAnswer)
 
