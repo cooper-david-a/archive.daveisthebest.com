@@ -18,14 +18,17 @@ class Room(models.Model):
     number_in_room = models.SmallIntegerField(default=1)
     offer = models.JSONField(null=True, blank=True)
     answer = models.JSONField(null=True, blank=True)
+    link_sent = models.BooleanField(default=False)
 
     def save(self):
+        if self.link_sent == False:
+            email_from = None
+            email_to = [self.invitee_email]
+            subject = f'{self.created_by.user.email} is inviting you to chat'
+            message = r'link: https://daveisthebest.com/live_chat/' + f'{self.id}'
+            send_mail(subject, message, email_from, email_to, fail_silently=False)
+            self.link_sent = True
         super().save()
-        email_from = None
-        email_to = [self.invitee_email]
-        subject = f'{self.created_by.user.email} is inviting you to chat'
-        message = r'link: https://daveisthebest.com/live_chat/' + f'{self.id}'
-        send_mail(subject, message, email_from, email_to, fail_silently=False)
 
     def __str__(self):
         return self.name
