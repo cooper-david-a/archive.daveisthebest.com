@@ -45,11 +45,11 @@ let init = async () => {
         addDataChannelEvents(dataChannel);
     }
     
-    if (isRoomCreator) {
-        createOffer();        
-    } else {
-        createAnswer();        
-    }
+    // if (isRoomCreator) {
+    //     createOffer();        
+    // } else {
+    //     createAnswer();        
+    // }
             
 }
 
@@ -180,7 +180,7 @@ function postChatMsg() {
     let chatEntry = document.createElement('p');
     chatEntry.innerHTML = msg;
     chatEntry.classList.add('me');
-    document.getElementById('chat-text').appendChild(chatEntry);
+    document.getElementById('chat-text').prepend(chatEntry);
     dataChannel.send(JSON.stringify({ type: 'chat', data: msg }));
     chatInput.value = '';
 }
