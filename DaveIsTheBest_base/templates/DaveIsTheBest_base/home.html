@@ -59,6 +59,13 @@
           <p>File sharing service for files up to 1GB.  Log in required to post files. I'm not sure how secure this is.</p>
         </div>
       </a>      
+      <a class="card" href="{% url 'live_chat_lobby' %}">{% comment %} Live Chat WebRTC {% endcomment %}
+        <h2>Live Chat</h2>
+        <div>
+          <img src="{% static 'DaveIsTheBest_base/live_chat.png' %}" alt="Live Chat">
+          <p>Peer to peer video, audio, and text chat using webRTC.  Currently only supports two peers.</p>
+        </div>
+      </a>      
     </div>
   </div>
 {% endblock content %}

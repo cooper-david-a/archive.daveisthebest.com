@@ -16,18 +16,28 @@
 
 {% block content %}
     <div id="live-chat-container">
-        <div id="videos">
-            <video class="video-player" id="user-2" autoplay playsinline></video>
-            <video class="video-player" id="user-1" autoplay playsinline muted></video>
-        </div>
-
-        <div id="controls">         
-            <div class="controls-container" id="camera-btn">
-                <img src="{% static 'live_chat_webRTC/camera.png' %}"/>
+        <div id="video-container">
+            <div id="videos">
+                <video class="video-player" id="user-2" autoplay playsinline></video>
+                <video class="video-player" id="user-1" autoplay playsinline muted></video>
             </div>
 
-            <div class="controls-container" id="mic-btn">
-                <img src="{% static 'live_chat_webRTC/mic.png' %}"/>
+            <div id="controls">         
+                <div class="controls-container" id="camera-btn">
+                    <img src="{% static 'live_chat_webRTC/camera.png' %}"/>
+                </div>
+
+                <div class="controls-container" id="mic-btn">
+                    <img src="{% static 'live_chat_webRTC/mic.png' %}"/>
+                </div>
+            </div>
+        </div>        
+        <div id="chat-window">
+            <div id = "chat-text">
+            </div>
+            <textarea id="chat-input"></textarea>
+            <div id="post-chat-btn">
+                <img src="{% static 'live_chat_webRTC/send.png' %}"/>
             </div>
         </div>
     </div>

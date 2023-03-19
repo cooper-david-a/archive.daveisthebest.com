@@ -8,6 +8,7 @@ const configuration = {
 
 const csrftoken = getCookie('csrftoken');
 let peerConnection = new RTCPeerConnection(configuration);
+let dataChannel;
 let localStream;
 let remoteStream;
 let sdpData;
@@ -28,28 +29,10 @@ let init = async () => {
     remoteStream = new MediaStream()
     user1.srcObject = localStream
     user2.srcObject = remoteStream
-
+    
     localStream.getTracks().forEach((track) => {
         peerConnection.addTrack(track, localStream);
     });
-
-    peerConnection.onconnectionstatechange = (event) => {
-        switch (peerConnection.connectionState) {
-            case "new":
-            case "checking":
-            case "connected":
-                user1.classList.add('small-frame');
-                user2.style.display = 'block';
-                break;
-            case "disconnected":
-                user1.classList.remove('small-frame');
-                user2.style.display = 'none';
-                break;
-            case "closed":
-            case "failed":
-            default:
-        }
-    }
 
     peerConnection.ontrack = (event) => {
         event.streams[0].getTracks().forEach((track) => { remoteStream.addTrack(track); });
@@ -57,16 +40,22 @@ let init = async () => {
         user2.style.display = 'block';
     };
 
+    peerConnection.ondatachannel = function (e) {
+        dataChannel = e.channel;
+        addDataChannelEvents(dataChannel);
+    }
+    
     if (isRoomCreator) {
         createOffer();        
     } else {
         createAnswer();        
     }
-
+            
 }
 
 let createOffer = async () => {
-
+    dataChannel = peerConnection.createDataChannel('dataChannel');
+    addDataChannelEvents(dataChannel);
     const offer = await peerConnection.createOffer();
     await peerConnection.setLocalDescription(offer);
     await waitForAllICE(peerConnection);
@@ -178,9 +167,51 @@ async function addAnswer() {
     } else setTimeout(addAnswer, 2000)
 }
 
-document.getElementById('camera-btn').addEventListener('click', toggleCamera)
-document.getElementById('mic-btn').addEventListener('click', toggleMic)
-// document.getElementById('create-answer').addEventListener('click', createAnswer)
+function addDataChannelEvents(dataChannel) {
+    dataChannel.onopen = function (e) { console.log(e) };
+    dataChannel.onclose = function (e) { console.log(e) };
+    dataChannel.onmessage = handleIncomingMsg;
+}
+        
+function postChatMsg() {
+    let chatInput = document.getElementById('chat-input');
+    let msg = chatInput.value;
+    msg = urlify(msg);
+    let chatEntry = document.createElement('p');
+    chatEntry.innerHTML = msg;
+    chatEntry.classList.add('me');
+    document.getElementById('chat-text').appendChild(chatEntry);
+    dataChannel.send(JSON.stringify({ type: 'chat', data: msg }));
+    chatInput.value = '';
+}
+
+function handleIncomingMsg(e) {
+    msg = JSON.parse(e.data);
+
+    switch (msg.type) {
+        case 'chat':
+            let chatEntry = document.createElement('p');
+            chatEntry.innerHTML = msg.data;
+            chatEntry.classList.add('you');
+            document.getElementById('chat-text').appendChild(chatEntry);            
+            break;
+    
+        default:
+            console.log(msg);
+    }
+}
+
+
+function urlify(text) {
+    var urlRegex = /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
+    return text.replace(urlRegex, function (url) {
+        return '<a href="' + url + '">' + url + '</a>';
+    })
+}
+
+document.getElementById('camera-btn').addEventListener('click', toggleCamera);
+document.getElementById('mic-btn').addEventListener('click', toggleMic);
+document.getElementById('post-chat-btn').addEventListener('click', postChatMsg);
 // document.getElementById('add-answer').addEventListener('click', addAnswer)
 
-init();
+window.addEventListener('load', init);

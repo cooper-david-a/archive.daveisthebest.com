@@ -1,5 +1,18 @@
-#live-chat-container{
-    position: relative;   
+#live-chat-container {
+    display: flex;
+}
+
+#video-container{
+    position: relative;
+    border: solid black 1px;
+    margin: 1px;
+    text-align: center;
+    border: black solid 1px;
+    border-radius: 10px;
+    box-shadow: 2px 2px rgb(122, 122, 122);
+    padding: 10px;
+    background-color: lightblue;
+    width: 100%;
 }
 
 #videos {
@@ -11,6 +24,7 @@
     width: 100%;
     max-height: 90vh;
     object-fit: contain;
+    border-radius: 50px;
 }
 
 #user-2 {
@@ -58,6 +72,57 @@
     height: 75%;
 }
 
-#leave-btn {
-    background-color: rgb(255,80,80,1);
+#chat-window {
+    display: grid;
+    grid-template: 85% 15% / 80% 20%;
+    margin: 1px;
+    border: black solid 1px;
+    border-radius: 10px;
+    box-shadow: 2px 2px rgb(122, 122, 122);
+    padding: 10px;
+    background-color: lightblue;
+    width: 50%;
+}
+
+#chat-text {
+    grid-area: 1 / 1 / span 1 / span 2;
+    background-color: white;
+    border: black solid 1px;
+    border-radius: 5px;
+    margin-bottom: 5px;
+}
+
+#chat-text .me {
+    width: 100%;
+    text-align: right;
+    padding-left: 25%;
+}
+
+#chat-text .you {
+    width: 100%;
+    text-align: left;
+    padding-right: 25%;
+}
+
+#chat-input {
+    grid-area: 2 / 1 / span 1 / span 1;
+    border-radius: 5px;
+    resize: none;
+    width: 100%;
+    height: 100%;
+}
+
+#post-chat-btn {
+    grid-area: 2 / 2 / span 1 / span 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgb(179,102,249,.9);
+    margin-left: 1px;
+    border-radius: 10%;
+}
+
+#post-chat-btn img {
+    padding: 10%;
+    width: 75%;
 }
