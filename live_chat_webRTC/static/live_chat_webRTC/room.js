@@ -45,11 +45,11 @@ let init = async () => {
         addDataChannelEvents(dataChannel);
     }
     
-    // if (isRoomCreator) {
-    //     createOffer();        
-    // } else {
-    //     createAnswer();        
-    // }
+    if (isRoomCreator) {
+        createOffer();        
+    } else {
+        createAnswer();        
+    }
             
 }
 
