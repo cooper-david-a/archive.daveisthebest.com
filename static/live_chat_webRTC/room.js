@@ -89,9 +89,9 @@ let postSdp = async (localDescription) => {
 }
 
 let retrieveSdp = async () => {
-    await fetch(window.location + '/sdp', { method: 'GET' })
+    await fetch(window.location + '/sdp', { method: 'GET', cache: 'no-cache' })
         .then((res) => res.json())
-        .then((data) => { sdpData = data; })
+        .then((data) => sdpData = data)
 }
 
 function waitForAllICE(peerConnection) {
@@ -159,6 +159,7 @@ let handleUserLeft = () => {
 
 async function addAnswer() {
     await retrieveSdp();
+    console.log(sdpData);
     if (sdpData.answer) {
         if (!peerConnection.currentRemoteDescription) {
             peerConnection.setRemoteDescription(sdpData.answer);
