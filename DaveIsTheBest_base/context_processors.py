@@ -25,7 +25,8 @@ def comments_context_processor(request):
                 'replies__id' : [comment['replies__id']] if comment['replies__id'] in comments else []
             }
         else:
-            comments[comment['id']]['replies__id'].append(comment['replies__id'])
+            if comment['replies__id'] in comments:
+                comments[comment['id']]['replies__id'].append(comment['replies__id'])
     
     level_1_comments = [comment for comment in comments.values() if comment['parent_comment_id'] is None]
 
