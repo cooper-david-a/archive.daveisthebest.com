@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'ThermoPropertyCalculator',
     'file_sharing',
     'live_chat_webRTC',
+    'comments',
 ]
 
 BASE_APP = 'DaveIsTheBest_base'
