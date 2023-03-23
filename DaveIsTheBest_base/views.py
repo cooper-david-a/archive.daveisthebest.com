@@ -1,9 +1,7 @@
-from django.views.generic import TemplateView, RedirectView, CreateView
-from django.contrib import messages
+from django.views.generic import TemplateView, CreateView
 from django.urls import reverse_lazy
 
-from .models import Comment
-from .forms import CommentForm, SignupForm
+from .forms import SignupForm
 
 class Home(TemplateView):
     template_name = 'DaveIsTheBest_base/home.html'

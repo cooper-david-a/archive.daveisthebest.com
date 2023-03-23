@@ -24,6 +24,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('__debug__/',include(debug_toolbar.urls)),
     path('', include('DaveIsTheBest_base.urls')),
+    path('comments/', include('comments.urls')),
     path('HIIT_Timer/', include('HIIT_Timer.urls')),
     path('ThermoPropertyCalculator/', include('ThermoPropertyCalculator.urls')),
     path('file_sharing/', include('file_sharing.urls')),
