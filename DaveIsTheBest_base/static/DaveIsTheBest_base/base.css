@@ -68,6 +68,8 @@ header nav a {
     width: 100%;
 }
 
+
+/*Comments*/
 #comments_container {
     justify-content: center;
     border-top: solid black 1px;
@@ -86,29 +88,11 @@ header nav a {
     background-color: lightblue;
 }
 
-.new_comment_form label{
-    display: none;
+.new_comment_form textarea {
+    width: 100%;
+    resize: vertical;    
 }
 
-.reply_form {
-    text-decoration: none;
-    text-align: left;
-    color: black;
-    border: solid black 1px;
-    border-radius: 10px;
-    box-shadow: 2px 2px rgb(122, 122, 122);
-    margin: 20px;
-    padding: 10px;
-    background-color: lightblue;
-}
-
-.reply_form label {
-    display: none;
-}
-
-.show_hide_reply_button {
-    display: inline;
-}
 
 #comment_messages {    
     text-decoration: none;
@@ -141,6 +125,33 @@ header nav a {
 
 .replies{
     display: auto;
+}
+
+.show_hide_reply_btn{
+    cursor: pointer;
+    width: 150px;
+    border: black solid 1px;
+    border-radius: 5px;
+    margin: 5px;
+    text-align: center;
+}
+
+.reply_btn {
+    cursor: pointer;
+    width: 150px;
+    border: black solid 1px;
+    border-radius: 5px;
+    margin: 5px;
+    text-align: center;
+}
+
+.post_comment_btn {
+    cursor: pointer;
+    width: 150px;
+    border: black solid 1px;
+    border-radius: 5px;
+    margin: 5px;
+    text-align: center;
 }
 
 footer {

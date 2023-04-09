@@ -51,41 +51,8 @@
     {% block content %}
     {% endblock content %}
     <h3>Comments</h3>
-    {% comment %} <div id="comments_container">
-
-        <div class="new_comment_form">
-            <form action="{% url 'comments' id=0 %}" method="post">
-                {% csrf_token %}
-                {{comment_form.as_p}}
-                <input type="submit" value="Post">
-            </form>
-        </div>        
-
-        {% if messages %}
-        <ul id="comment_messages">
-            {% for message in messages %}
-                <li>{{ message }}</li>
-            {% endfor %}
-        </ul>
-        {% endif %}
-
-        <h4>{{comments_count}} Comments</h4>
-
-        {% for comment in comment_page_obj %}
-            {% include 'DaveIsTheBest_base/comment.html' with comment=comment comments_list=comments %}
-        {% endfor %}
-
-        {% if comment_page_obj.has_previous %}
-            <a href="?comment_page={{ comment_page_obj.previous_page_number }}">previous</a>
-        {% endif %}
-
-        <p>Page {{ comment_page_obj.number }} of {{ comment_page_obj.paginator.num_pages }}</p>
-
-        {% if comment_page_obj.has_next %}
-            <a href="?comment_page={{ comment_page_obj.next_page_number }}">next</a>
-        {% endif %}
-
-    </div> {% endcomment %}
+    <div id="comments_container">
+    </div>
 
     <footer>
         <div id="footer_content">

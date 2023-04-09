@@ -19,12 +19,4 @@ class Comment(models.Model):
         ordering = ['-date_entered']
 
     def save(self, *args, **kwargs):
-        #Spam Check
-        spam_filter = CommentsConfig.spam_filter_model
-        spam_vectorizer = CommentsConfig.spam_vectorizer
-        vectorized_comment = spam_vectorizer.transform([self.comment_text])
-        self.auto_is_spam = (spam_filter.predict_proba(vectorized_comment)[:,1]>.3).astype(bool)
-        
-        self.ok_to_display = not (self.auto_is_spam or self.manual_is_spam)
-
         super(Comment, self).save(*args, **kwargs)
