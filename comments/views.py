@@ -15,12 +15,12 @@ def comments(request):
 
 
         comments = {comment.id: {'id': comment.id,
-                                 'date_entered': comment.date_entered,
-                                 'commenter_name': comment.commenter_name,
-                                 'comment_text': comment.comment_text,
-                                 'reply_ids': [reply.id for reply in comment.replies.all() ],
-                                 'parent_comment_id': (None if comment.parent_comment is None else comment.parent_comment.id)
-                                 } for comment in queryset}
+                    'date_entered': comment.date_entered,
+                    'commenter_name': comment.commenter_name,
+                    'comment_text': comment.comment_text,
+                    'reply_ids': [reply.id for reply in comment.replies.all()],
+                    'parent_comment_id': (None if comment.parent_comment is None else comment.parent_comment.id)
+                    } for comment in queryset}
         
         return JsonResponse({'comments': comments})
     

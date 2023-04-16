@@ -123,10 +123,6 @@ header nav a {
     padding-left: 10px;
 }
 
-.replies{
-    display: auto;
-}
-
 .show_hide_reply_btn{
     cursor: pointer;
     width: 150px;
@@ -152,6 +148,19 @@ header nav a {
     border-radius: 5px;
     margin: 5px;
     text-align: center;
+}
+
+.pagination_button {
+    cursor: pointer;
+    width: 40px;
+    display: inline-block;
+    margin: 5px;
+    padding: 5px;
+    background-color: lightblue;
+}
+
+.current_page_button {
+    background-color: transparent;
 }
 
 footer {
