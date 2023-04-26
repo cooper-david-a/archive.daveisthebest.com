@@ -37,12 +37,18 @@ async function getComments() {
   await fetch(window.location.origin + `/comments/?latest=${latestComment}`, { method: 'GET' })
     .then((res) => res.json())
     .then((data) => {
-      if (latestComment>0) Object.entries(data.comments).forEach((reply) => comments[reply[1].parent_comment_id].reply_ids.unshift(reply[0]));
-      comments = Object.fromEntries(Object.entries(comments).concat(Object.entries(data.comments)));      
+      let newEntries = Object.entries(data.comments);
+      comments = Object.fromEntries(Object.entries(comments).concat(newEntries));
+      for (entry of newEntries) {
+        let id = entry[0];
+        let comment = entry[1];
+        if (comment.parent_comment_id) { comments[comment.parent_comment_id].reply_ids.unshift(id) };
+      }
       threadIds = Object.values(comments)
         .filter((comment) => comment.parent_comment_id === null)
         .map((comment) => comment.id)
         .reverse();
+      if (newEntries.length > 0) { displayComments() };
     })
     .catch((error) => console.log(error));
   
@@ -268,7 +274,7 @@ async function postComment(event) {
     .then((msg) => { if (msg.auto_is_spam) addSpamMsg(comment.parent_comment_id) })
     .catch((error) => console.log(error))
   
-  await getComments().then(displayComments);
+  await getComments();
 
   event.target.parentNode.reset();
 }
@@ -287,5 +293,5 @@ function deleteSpamMsg(parent_comment_id) {
 }
 
 comments_container.before(renderCommentForm());
-getComments().then(displayComments);
-setInterval(()=>getComments().then(displayComments),60000)
+getComments();
+setInterval(()=>getComments(),60000)
