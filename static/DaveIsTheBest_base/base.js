@@ -38,16 +38,21 @@ async function getComments() {
     .then((res) => res.json())
     .then((data) => {
       let newEntries = Object.entries(data.comments);
-      comments = Object.fromEntries(Object.entries(comments).concat(newEntries));
+      newEntries.forEach((entry) => { entry[1].reply_ids = []; comments[entry[0]] = entry[1]; });
+
       for (entry of newEntries) {
         let id = entry[0];
         let comment = entry[1];
-        if (comment.parent_comment_id) { comments[comment.parent_comment_id].reply_ids.unshift(id) };
+        if (comment.parent_comment_id) {          
+          comments[comment.parent_comment_id]['reply_ids'].unshift(id)
+        }
       }
+
       threadIds = Object.values(comments)
         .filter((comment) => comment.parent_comment_id === null)
         .map((comment) => comment.id)
         .reverse();
+      
       if (newEntries.length > 0) { displayComments() };
     })
     .catch((error) => console.log(error));
@@ -163,7 +168,7 @@ function renderCommentPagination() {
     threadsPerPageSelector.append(option);
   }
   threadsPerPageSelector.value = threadsPerPage;
-  threadsPerPageSelector.addEventListener('change', (event) => { threadsPerPage = event.target.value; currentCommentPage = 1; displayComments() });
+  threadsPerPageSelector.addEventListener('change', (event) => { threadsPerPage = Number(event.target.value); currentCommentPage = 1; displayComments() });
   commentsPaginationDiv.append(threadsPerPageSelector);
 
 
@@ -294,4 +299,4 @@ function deleteSpamMsg(parent_comment_id) {
 
 comments_container.before(renderCommentForm());
 getComments();
-setInterval(()=>getComments(),60000)
+setInterval(getComments,60000)

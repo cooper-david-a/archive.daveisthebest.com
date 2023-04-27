@@ -9,16 +9,12 @@ def comments(request):
     if request.method == 'GET':
         latest = request.GET.get('latest') #latest comment known to client
         latest = latest if latest is not None else 0
-        queryset = Comment.objects.filter(ok_to_display=True, id__gt = latest).prefetch_related(
-                Prefetch('replies',queryset=Comment.objects.filter(ok_to_display=True).all())
-            ).select_related('parent_comment').all()
-
+        queryset = Comment.objects.filter(ok_to_display=True, id__gt = latest).select_related('parent_comment').all()
 
         comments = {comment.id: {'id': comment.id,
                     'date_entered': comment.date_entered,
                     'commenter_name': comment.commenter_name,
                     'comment_text': comment.comment_text,
-                    'reply_ids': [reply.id for reply in comment.replies.all()],
                     'parent_comment_id': (None if comment.parent_comment is None else comment.parent_comment.id)
                     } for comment in queryset}
         
