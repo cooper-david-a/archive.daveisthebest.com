@@ -189,9 +189,7 @@ function handleIncomingMsg(e) {
 
 function urlify(text) {
     var urlRegex = /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
-    return text.replace(urlRegex, function (url) {
-        return '<a href="' + url + '">' + url + '</a>';
-    })
+    return text.replace(urlRegex, (url) => '<a href="' + url + '" target="_blank">' + url + '</a>')
 }
 
 document.getElementById('camera-btn').addEventListener('click', toggleCamera);

@@ -97,7 +97,7 @@ function createCommentDiv(comment) {
   commentDiv.classList.add("existing_comment_card")
   commentDiv.innerHTML = `
     <p><em>${commenter_name}</em>, ${humanReadableDuration(now - date_entered)}</p>    
-    <p class="comment_text">${comment.comment_text}</p>
+    <p class="comment_text">${urlify(comment.comment_text)}</p>
     <div id="reply_btn_${comment.id}" class="reply_btn" onclick="showHideReplyForm(${comment.id})">Reply</div>    
   `
 
@@ -309,6 +309,11 @@ function addSpamMsg(parent_comment_id) {
 
 function deleteSpamMsg(parent_comment_id) {  
   document.getElementById('spam_msg_' + parent_comment_id).remove();
+}
+
+function urlify(text) {
+  var urlRegex = /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
+  return text.replace(urlRegex, (url) => '<a href="' + url + '" target="_blank">' + url + '</a>')
 }
 
 comments_container.before(renderCommentForm());
