@@ -4,6 +4,7 @@ let threadIds = [];
 let currentCommentPage = 1;
 let threadsPerPage = 10;
 let comments_container = document.getElementById('comments_container');
+let comments_header = document.getElementById('comments_header');
 const csrftoken = getCookie('csrftoken');
 
 function header_expand_collapse() {
@@ -38,34 +39,50 @@ async function getComments() {
     .then((res) => res.json())
     .then((data) => {
       let newEntries = Object.entries(data.comments);
-      newEntries.forEach((entry) => { entry[1].reply_ids = []; comments[entry[0]] = entry[1]; });
 
-      for (entry of newEntries) {
-        let id = entry[0];
-        let comment = entry[1];
-        if (comment.parent_comment_id) {          
-          comments[comment.parent_comment_id]['reply_ids'].unshift(id)
+      newEntries.forEach(
+        (entry) => {
+          let id = entry[0];
+          let comment = entry[1];
+          comment.reply_ids = [];
+          comments[id] = comment;
+          if (comment.parent_comment_id) {
+            comments[comment.parent_comment_id]['reply_ids'].push(id);
+          }
         }
-      }
+      );
 
       threadIds = Object.values(comments)
         .filter((comment) => comment.parent_comment_id === null)
         .map((comment) => comment.id)
         .reverse();
       
-      if (newEntries.length > 0) { displayComments() };
+      if (latestComment > 0) { displayComments(newEntries) };
+      if (latestComment == 0) { displayComments() };
     })
     .catch((error) => console.log(error));
   
 }
 
-async function displayComments() {  
-  comments_container.innerHTML = `<p><h3>Comments</h3></p> <p>${threadIds.length} Threads</p>`;
+async function displayComments(newEntries) {  
   let first = (currentCommentPage - 1) * threadsPerPage;
   let last = first + threadsPerPage;
-  let commentsPage = threadIds.slice(first, last);
-  commentsPage.forEach((comment_id) => createCommentDiv(comments[comment_id]));
-  comments_container.append(renderCommentPagination());
+  let commentsPage = threadIds.slice(first, last).reverse();
+  comments_header.innerHTML = `<p><h3>Comments</h3></p> <p>${threadIds.length} Threads</p>`
+
+  if (!newEntries) { /*refresh all comments*/
+    comments_container.innerHTML = '';
+    commentsPage.forEach((comment_id) => createCommentDiv(comments[comment_id]));
+    comments_container.append(renderCommentPagination());
+  } else {
+    newEntries.forEach(
+      (entry) => {
+        let id = entry[0];
+        let comment = entry[1];
+        createCommentDiv(comment);
+      }
+      )
+  }
 }
 
 function createCommentDiv(comment) {
@@ -114,11 +131,8 @@ function createCommentDiv(comment) {
     parent = document.getElementById(`comment_${parent_comment_id}_replies`);
   }
 
-  parent.append(commentDiv);
-
-  if (comment.reply_ids) {
-    comment.reply_ids.forEach((comment_id) => createCommentDiv(comments[comment_id]));
-  }
+  parent.prepend(commentDiv);
+  comment.reply_ids.forEach((comment_id) => createCommentDiv(comments[comment_id]));
 }
 
 function renderCommentPagination() {
