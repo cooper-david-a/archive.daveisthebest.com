@@ -173,7 +173,28 @@ function initialize() {
   updateSecondInputVariables();
   updateInputUnits();
   updateOutputUnits();
-  property_plot();
+
+  fetch(window.origin + '/static/ThermoPropertyCalculator/PH_Water.json')
+    .then((res) => res.json())
+    .then((data) => PH_Water_data = data.PH_Water_data)
+    .then(property_plot)
+    .catch((error) => console.log(error));
+  
+  fetch(window.origin + '/static/ThermoPropertyCalculator/PH_R134a.json')
+    .then((res) => res.json())
+    .then((data) => PH_R134a_data = data.PH_R134a_data)
+    .catch((error) => console.log(error));
+  
+  fetch(window.origin + '/static/ThermoPropertyCalculator/TS_Water.json')
+    .then((res) => res.json())
+    .then((data) => TS_Water_data = data.TS_Water_data)
+    .catch((error) => console.log(error));
+  
+  fetch(window.origin + '/static/ThermoPropertyCalculator/TS_R134a.json')
+    .then((res) => res.json())
+    .then((data) => TS_R134a_data = data.TS_R134a_data)
+    .catch((error) => console.log(error));
+  
 };
 
 
@@ -300,7 +321,7 @@ function PH_plot() {
     }
   }
   
-  const data = [sat_dome_trace, D_trace, S_trace, Q_trace, T_trace, state_trace]
+  const data = [sat_dome_trace, D_trace, S_trace, Q_trace, T_trace, state_trace];
   
   const layout = {
     title: `${fluid} P-H diagram`,
@@ -322,8 +343,10 @@ function PH_plot() {
       type: 'log'
     }
   }
+
+  const config = { responsive: true };
   
-  Plotly.newPlot('plot_window', data, layout, {responsive: true});
+  Plotly.react('plot_window', data, layout, config);
 }
 
 function TS_plot() {
@@ -478,7 +501,9 @@ function TS_plot() {
     }
   }
 
-  Plotly.newPlot('plot_window', data, layout, { responsive: true });
+  const config = { responsive: true };
+
+  Plotly.react('plot_window', data, layout, config);
 }
 
 function property_plot() {

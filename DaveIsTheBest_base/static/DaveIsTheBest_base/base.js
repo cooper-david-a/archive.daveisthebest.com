@@ -194,7 +194,7 @@ function humanReadableDuration(deltaT) {
   let minutes = Math.floor(deltaT / 1000 / 60);
   if (minutes <= 2) return 'just now';
   let hours = Math.floor(minutes / 60);
-  if (hours <= 2) return `${minutes} minutes ago`;
+  if (hours <= 1) return `${minutes} minutes ago`;
   let days = Math.floor(hours / 24);
   if (days <= 1) return `${hours} hours ago`;
   let weeks = Math.floor(days / 7);

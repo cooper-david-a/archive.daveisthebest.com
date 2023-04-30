@@ -24,12 +24,15 @@
   color: black;
 }
 
-#plot_window {
+#my_plot_container{
   display: inline-block;
-  background-color: white;
-  border: solid 1px black;
-  height: 100vw;
-  width: 100vw;
+  width: 100%;
   max-width: 1000px;
-  max-height: 1000px;
+  aspect-ratio: 1;
+  border: solid black 1px;
+}
+
+#plot_window {
+  width: 100%;
+  aspect-ratio: 1;
 }

@@ -7,7 +7,6 @@
     flex-wrap: wrap;
     justify-content: center;
     border-top: solid black 1px;
-    border-bottom: solid black 1px;
 }
 
 #apps_container .card{

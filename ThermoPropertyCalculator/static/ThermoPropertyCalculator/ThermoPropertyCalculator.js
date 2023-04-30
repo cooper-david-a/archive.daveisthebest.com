@@ -1,8 +1,12 @@
-var phaseIndexLiquid;
-var phaseIndexMixed;
-var phaseIndexVapor;
-var phaseIndexSupCrit;
-var state = {};
+let phaseIndexLiquid;
+let phaseIndexMixed;
+let phaseIndexVapor;
+let phaseIndexSupCrit;
+let state = {};
+let PH_Water_data;
+let TS_Water_data;
+let PH_R134a_data;
+let TS_R134a_data;
 
 convertToSI = {
   '-': (x) => x,
@@ -173,7 +177,27 @@ function initialize() {
   updateSecondInputVariables();
   updateInputUnits();
   updateOutputUnits();
-  property_plot();
+  
+  fetch(window.origin + '/static/ThermoPropertyCalculator/PH_Water.json')
+    .then((res) => res.json())
+    .then((data) => PH_Water_data = data.PH_Water_data)
+    .then(property_plot)
+    .catch((error) => console.log(error));
+  
+  fetch(window.origin + '/static/ThermoPropertyCalculator/TS_Water.json')
+    .then((res) => res.json())
+    .then((data) => TS_Water_data = data.TS_Water_data)
+    .catch((error) => console.log(error));
+  
+  fetch(window.origin + '/static/ThermoPropertyCalculator/PH_R134a.json')
+    .then((res) => res.json())
+    .then((data) => PH_R134a_data = data.PH_R134a_data)
+    .catch((error) => console.log(error));
+  
+  fetch(window.origin + '/static/ThermoPropertyCalculator/TS_R134a.json')
+    .then((res) => res.json())
+    .then((data) => TS_R134a_data = data.TS_R134a_data)
+    .catch((error) => console.log(error));
 };
 
 
@@ -207,6 +231,7 @@ function PH_plot() {
       dash: "longdash"
     },
     hovertemplate: 'V: %{z:.3g} (m^3/kg)<extra></extra>',
+    visible: 'legendonly',
   }
 
   const D_trace = {
@@ -225,6 +250,7 @@ function PH_plot() {
       dash: "dashdot"
     },
     hovertemplate: 'D: %{z:4.2g} (kg/m^3)<extra></extra>',
+    visible: 'legendonly',
   }
   const S_trace = {
     x: plot_data.H,
@@ -242,6 +268,7 @@ function PH_plot() {
       dash: "dot"
     },
     hovertemplate: 'S: %{z:d} (J/(kg*K))<extra></extra>',
+    visible: 'legendonly',
   }
   const Q_trace = {
     x: plot_data.H,
@@ -269,6 +296,7 @@ function PH_plot() {
     showscale: false,
     hoverongaps: false,
     hovertemplate: 'Q: %{z:0.2f}<extra></extra>',
+    visible: 'legendonly',
   }
   const T_trace = {
     x: plot_data.H,
@@ -286,7 +314,23 @@ function PH_plot() {
       dash: "solid"
     },
     hovertemplate: 'H: %{x:1.2e} J/kg<br>P: %{y:1.2e} Pa<br>T: %{z:1.0d}K<extra></extra>',
+    visible: 'legendonly',
   }
+  const PH_trace = {
+    x: plot_data.H,
+    y: plot_data.P,
+    z: Array(200).fill(Array(200).fill(0)),
+    type: 'contour',
+    name: 'PH',
+    showscale: false,
+    hoverongaps: false,
+    contours: {
+      coloring: 'none'
+    },
+    hovertemplate: 'H: %{x:.2e} J/kg<br>P: %{y:.2e} Pa<extra></extra>',
+    visible: true,
+    showlegend: false,
+  };  
 
   const state_trace = {
     x: [],
@@ -300,7 +344,7 @@ function PH_plot() {
     }
   }
   
-  const data = [sat_dome_trace, D_trace, S_trace, Q_trace, T_trace, state_trace]
+  const data = [sat_dome_trace, D_trace, S_trace, Q_trace, T_trace, PH_trace, state_trace]
   
   const layout = {
     title: `${fluid} P-H diagram`,
@@ -323,7 +367,7 @@ function PH_plot() {
     }
   }
   
-  Plotly.newPlot('plot_window', data, layout, {responsive: true});
+  Plotly.react('plot_window', data, layout, {responsive: true});
 }
 
 function TS_plot() {
@@ -356,6 +400,7 @@ function TS_plot() {
       dash: "longdash"
     },
     hovertemplate: 'V: %{z:.2e} m^3/kg<extra></extra>',
+    visible: 'legendonly',
   }
 
   const D_trace = {
@@ -374,6 +419,7 @@ function TS_plot() {
       dash: "dashdot"
     },
     hovertemplate: 'D: %{z:.2e} kg/m^3<extra></extra>',
+    visible: 'legendonly',
   }
   const H_trace = {
     x: plot_data.S,
@@ -394,6 +440,7 @@ function TS_plot() {
       dash: "dot"
     },
     hovertemplate: 'H: %{z:.2e} J/(kg*K)<extra></extra>',
+    visible: 'legendonly',
   }
   const Q_trace = {
     x: plot_data.S,
@@ -403,9 +450,9 @@ function TS_plot() {
     name: 'Q (-)',
     autocontour: true,
     contours: {
-      start: 0,
+      start: .1,
       size: .1,
-      end: 1,
+      end: .9,
       coloring: "none",
       labelformat: ".1f",
       showlabels: true,
@@ -422,6 +469,7 @@ function TS_plot() {
     showscale: false,
     hoverongaps: false,
     hovertemplate: 'Q: %{z:.2f}<extra></extra>',
+    visible: 'legendonly',
   }
   const P_trace = {
     x: plot_data.S,
@@ -442,7 +490,23 @@ function TS_plot() {
       dash: "solid"
     },
     hovertemplate: 'S: %{x:d} J/kg/K<br>T: %{y:d} K<br>P: %{z:.3e} Pa<extra></extra>',
+    visible: 'legendonly',
   }
+  const TS_trace = {
+    x: plot_data.S,
+    y: plot_data.T,
+    z: Array(200).fill(Array(200).fill(0)),
+    type: 'contour',
+    name: 'TS',
+    showscale: false,
+    hoverongaps: false,
+    contours: {
+      coloring: 'none'
+    },
+    hovertemplate: 'S: %{x:d} J/kg/K<br>T: %{y:d} K<extra></extra>',
+    visible: true,
+    showlegend: false,
+  };  
 
   const state_trace = {
     x: [],
@@ -456,7 +520,7 @@ function TS_plot() {
     }
   };
 
-  const data = [sat_dome_trace, V_trace, H_trace, Q_trace, P_trace, state_trace]
+  const data = [sat_dome_trace, V_trace, H_trace, Q_trace, P_trace, TS_trace, state_trace]
 
   const layout = {
     title: `${fluid} T-S diagram`,
@@ -478,16 +542,19 @@ function TS_plot() {
     }
   }
 
-  Plotly.newPlot('plot_window', data, layout, { responsive: true });
+  Plotly.react('plot_window', data, layout, { responsive: true });
 }
 
 function property_plot() {
   plot_type = elements.plot_type.value;
-  if (plot_type == 'PH') {
-    PH_plot();
-  }
-  if (plot_type == 'TS') {
-    TS_plot();
+
+  switch (plot_type) {
+    case 'PH':
+      PH_plot();
+      break;
+    case 'TS':
+      TS_plot();
+      break;
   }
 }
 
@@ -504,6 +571,7 @@ function plot_state() {
     case 'TS':
       x = state.S;
       y = state.T;
+      break;
   }
 
   const state_trace_update = {
