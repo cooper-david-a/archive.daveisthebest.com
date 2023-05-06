@@ -26,9 +26,9 @@ function deleteRow() {
 }
 
 function createTimer() {
-  if (data.state == "running") return;
+  if (timerData.state == "running") return;
   
-  data.roundIndex = 0;
+  timerData.roundIndex = 0;
 
   let hard = document.getElementsByName("hard_time");
   let easy = document.getElementsByName("easy_time");
@@ -61,13 +61,13 @@ function createTimer() {
   timeArray[timeArrayLength-1] = 
     timeArray[timeArrayLength-2] + parseInt(document.getElementById("cooldown").value);
 
-  data.timeArray = timeArray;
-  data.remaining = timeArray[timeArrayLength-1];
-  data.roundTime = timeArray[0];
-  data.elapsed = 0;
-  data.state = "stopped"
-  data.holdOverTime = 0;
-  data.roundIndex = 0;
+  timerData.timeArray = timeArray;
+  timerData.remaining = timeArray[timeArrayLength-1];
+  timerData.roundTime = timeArray[0];
+  timerData.elapsed = 0;
+  timerData.state = "stopped"
+  timerData.holdOverTime = 0;
+  timerData.roundIndex = 0;
   let msg = document.getElementById("message")
   msg.innerText = "Ready?";
   msg.style.display = "block";
@@ -78,9 +78,9 @@ function createTimer() {
 }
 
 function updateClocks(){
-  document.getElementById("remaining").innerText = formatTime(data.remaining);
-  document.getElementById("round_timer").innerText = formatTime(data.roundTime);
-  document.getElementById("elapsed").innerText = formatTime(Math.max(0,data.elapsed));
+  document.getElementById("remaining").innerText = formatTime(timerData.remaining);
+  document.getElementById("round_timer").innerText = formatTime(timerData.roundTime);
+  document.getElementById("elapsed").innerText = formatTime(Math.max(0,timerData.elapsed));
 };
 
 function formatTime(seconds) {
@@ -91,19 +91,19 @@ function formatTime(seconds) {
 
 function updateDocument(){
   let currentTime = new Date();
-  data.elapsed = data.holdOverTime + (currentTime - data.startTime)/1000;
-  data.roundTime = data.timeArray[data.roundIndex] - data.elapsed;
-  data.remaining = data.timeArray[data.timeArray.length-1] - data.elapsed;
-  let progress = data.elapsed / (data.elapsed + data.remaining);
+  timerData.elapsed = timerData.holdOverTime + (currentTime - timerData.startTime)/1000;
+  timerData.roundTime = timerData.timeArray[timerData.roundIndex] - timerData.elapsed;
+  timerData.remaining = timerData.timeArray[timerData.timeArray.length-1] - timerData.elapsed;
+  let progress = timerData.elapsed / (timerData.elapsed + timerData.remaining);
 
-  if (data.roundTime < 0){
-    data.roundIndex++;
-    data.bell.play();
-    data.roundTime = data.timeArray[data.roundIndex] - data.elapsed;
+  if (timerData.roundTime < 0){
+    timerData.roundIndex++;
+    timerData.bell.play();
+    timerData.roundTime = timerData.timeArray[timerData.roundIndex] - timerData.elapsed;
     updateMessage();
   }
   
-  if (data.remaining < 0){
+  if (timerData.remaining < 0){
     stop();
     return;
   }
@@ -113,37 +113,37 @@ function updateDocument(){
 }
 
 function playPause(){
-  if (data.state === "running"){
-    clearInterval(data.timer);
-    data.state = "paused";
-    document.getElementById("playPauseButton").firstChild.src=data.playImg;
-    data.holdOverTime = data.elapsed;
+  if (timerData.state === "running"){
+    clearInterval(timerData.timer);
+    timerData.state = "paused";
+    document.getElementById("playPauseButton").firstChild.src=timerData.playImg;
+    timerData.holdOverTime = timerData.elapsed;
     return;
   }
 
-  if (data.state === "paused") {
-    data.startTime = new Date();    
-    data.timer = setInterval(updateDocument, 100);
-    data.state = "running";
-    document.getElementById("playPauseButton").firstChild.src=data.pauseImg;
+  if (timerData.state === "paused") {
+    timerData.startTime = new Date();    
+    timerData.timer = setInterval(updateDocument, 100);
+    timerData.state = "running";
+    document.getElementById("playPauseButton").firstChild.src=timerData.pauseImg;
     return;
   }
 
-  if (data.state === "stopped"){
-    data.startTime = new Date();
-    data.timer = setInterval(updateDocument, 100);
-    data.state = "running";
-    document.getElementById("playPauseButton").firstChild.src=data.pauseImg;
+  if (timerData.state === "stopped"){
+    timerData.startTime = new Date();
+    timerData.timer = setInterval(updateDocument, 100);
+    timerData.state = "running";
+    document.getElementById("playPauseButton").firstChild.src=timerData.pauseImg;
     updateMessage();
     return;
   }
 }
 
 function stop(){
-  clearInterval(data.timer);
-  data.state = "stopped";
+  clearInterval(timerData.timer);
+  timerData.state = "stopped";
   createTimer();
-  document.getElementById("playPauseButton").firstChild.src=data.playImg;
+  document.getElementById("playPauseButton").firstChild.src=timerData.playImg;
 }
 
 function updateProgress(progress){
@@ -152,10 +152,10 @@ function updateProgress(progress){
 
 function updateMessage(){
   let msg = document.getElementById("message");
-  let warmup = data.roundIndex == 0;
-  let cooldown = data.roundIndex == data.timeArray.length - 1;
-  let hard = (data.roundIndex%2 != 0) && !(cooldown);
-  let easy = (data.roundIndex%2 == 0) && !(warmup);
+  let warmup = timerData.roundIndex == 0;
+  let cooldown = timerData.roundIndex == timerData.timeArray.length - 1;
+  let hard = (timerData.roundIndex%2 != 0) && !(cooldown);
+  let easy = (timerData.roundIndex%2 == 0) && !(warmup);
   let actionImage = document.getElementsByClassName('action_img')
   
   if (warmup) {
