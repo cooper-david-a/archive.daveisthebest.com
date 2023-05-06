@@ -24,7 +24,7 @@
 {% endblock about_text %}
 
 {% block content %}
-<div>
+<div id="videoContainer" onclick="toggleRun();">
   <video id="videoIn"></video>
   <canvas id="videoDisplay"></canvas>
 </div>
@@ -33,10 +33,7 @@
   <canvas id="canvasPuzzle"></canvas>
 </div>
 
-<button id="go_btn" onclick="go();" disabled>Go</button>
-<button id="stop_btn" onclick="stop();">Stop</button>
-
 <script src="https://cdn.jsdelivr.net/npm/onnxruntime-web/dist/ort.min.js"></script>
 <script src="{% static 'DaveIsTheBest_base/sudoku_solver.js' %}"></script>
-<script async src="https://docs.opencv.org/4.6.0/opencv.js" onload="ready();"></script>
+<script async src="https://docs.opencv.org/4.7.0/opencv.js"></script>
 {% endblock content %}

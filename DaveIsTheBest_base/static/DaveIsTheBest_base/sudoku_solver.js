@@ -5,6 +5,7 @@ let videoIn = document.getElementById("videoIn");
 let videoDisplay = document.getElementById("videoDisplay");
 let canvasPuzzle = document.getElementById("canvasPuzzle");
 let streaming = false;
+let running = false;
 
 navigator.mediaDevices.getUserMedia({ video: {facingMode:'environment'} })
     .then(function (stream) {
@@ -18,7 +19,13 @@ navigator.mediaDevices.getUserMedia({ video: {facingMode:'environment'} })
     });
 
 function ready() {
-    document.getElementById('go_btn').disabled = false;
+    document.getElementById('videoContainer').addEventListener('click',toggleRun);
+}
+
+function toggleRun() {
+    if (running) stop();
+    if (!running) go();
+    running = !running;
 }
 
 function go() {
