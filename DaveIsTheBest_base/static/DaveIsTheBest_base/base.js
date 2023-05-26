@@ -32,7 +32,7 @@ function header_expand_collapse() {
 /*comments*/
 async function getComments() {
 
-  let latestComment = Object.keys(comments).reverse()[0];
+  let latestComment = Number(Object.keys(comments).reverse()[0]);
   if (!latestComment) latestComment = 0;
 
   await fetch(window.location.origin + `/comments/?latest=${latestComment}`, { method: 'GET' })
@@ -57,32 +57,22 @@ async function getComments() {
         .map((comment) => comment.id)
         .reverse();
       
-      if (latestComment > 0) { displayComments(newEntries) };
-      if (latestComment == 0) { displayComments() };
+      if (newEntries.length > 0) displayComments()
     })
     .catch((error) => console.log(error));
   
 }
 
-async function displayComments(newEntries) {  
+async function displayComments() {  
   let first = (currentCommentPage - 1) * threadsPerPage;
   let last = first + threadsPerPage;
   let commentsPage = threadIds.slice(first, last).reverse();
   comments_header.innerHTML = `<p><h3>Comments</h3></p> <p>${threadIds.length} Threads</p>`
 
-  if (!newEntries) { /*refresh all comments*/
-    comments_container.innerHTML = '';
-    commentsPage.forEach((comment_id) => createCommentDiv(comments[comment_id]));
-    comments_container.append(renderCommentPagination());
-  } else {
-    newEntries.forEach(
-      (entry) => {
-        let id = entry[0];
-        let comment = entry[1];
-        createCommentDiv(comment);
-      }
-      )
-  }
+/*refresh all comments*/
+  comments_container.innerHTML = '';
+  commentsPage.forEach((comment_id) => createCommentDiv(comments[comment_id]));
+  comments_container.append(renderCommentPagination());  
 }
 
 function createCommentDiv(comment) {
@@ -208,21 +198,33 @@ function humanReadableDuration(deltaT) {
 
 function showHideReplies(parent_comment_id, n) {
   let replies = document.getElementById(`comment_${parent_comment_id}_replies`);
-  let show_hide_replies_button = document.getElementById(`show_hide_replies_button_${parent_comment_id}`);
-
   let button_text = n > 1 ? "Replies" : "Reply";
 
   if (replies.style.display == "none") {
 
-    replies.style.display = "block";
-    show_hide_replies_button.innerHTML = `Hide ${button_text}`;
+    showReplies(parent_comment_id, button_text);
 
   } else if (replies.style.display == "block") {
 
-    replies.style.display = "none";
-    show_hide_replies_button.innerHTML = `Show ${button_text}`;
+    hideReplies(parent_comment_id, button_text);
 
   }
+}
+
+function hideReplies(parent_comment_id, button_text) {
+  let replies = document.getElementById(`comment_${parent_comment_id}_replies`);
+  let show_hide_replies_button = document.getElementById(`show_hide_replies_button_${parent_comment_id}`);
+  replies.style.display = "none";
+  show_hide_replies_button.innerHTML = `Show ${button_text}`;
+}
+
+function showReplies(parent_comment_id, button_text) {
+  let replies = document.getElementById(`comment_${parent_comment_id}_replies`);
+  let show_hide_replies_button = document.getElementById(`show_hide_replies_button_${parent_comment_id}`);
+
+  replies.style.display = "block";
+  show_hide_replies_button.innerHTML = `Hide ${button_text}`;
+
 }
 
 function showHideReplyForm(parent_comment_id) {
@@ -296,6 +298,13 @@ async function postComment(event) {
   await getComments();
 
   event.target.parentNode.reset();
+
+  while (Number(comment.parent_comment_id) > 0) {
+    let n = comments[comment.parent_comment_id].reply_ids.length
+    showReplies(comment.parent_comment_id, n > 1 ? "Replies" : "Reply")
+    comment = comments[comment.parent_comment_id]      
+  }
+
 }
 
 function addSpamMsg(parent_comment_id) {
