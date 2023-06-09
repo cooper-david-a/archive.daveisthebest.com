@@ -3,6 +3,9 @@
 
 {% block headTag %}
 <link rel="stylesheet" href="{% static 'DaveIsTheBest_base/sudoku_solver.css' %}">
+<script defer src="{% static 'DaveIsTheBest_base/sudoku_solver.js' %}"></script>
+<script defer src="https://docs.opencv.org/4.7.0/opencv.js" onload="ready()"></script>
+{% comment %} <script src="https://cdn.jsdelivr.net/npm/onnxruntime-web/dist/ort.min.js"></script> {% endcomment %}
 {% endblock headTag %}
 
 {% block about_text %}
@@ -24,16 +27,21 @@
 {% endblock about_text %}
 
 {% block content %}
-<div id="videoContainer" onclick="toggleRun();">
+<div id="videoContainer">
   <video id="videoIn"></video>
   <canvas id="videoDisplay"></canvas>
 </div>
 
 <div>
   <canvas id="canvasPuzzle"></canvas>
+  <p>Confidence: <span id="confidence">0</span>%</p>
+  <dialog id="confirmCorrectPuzzle">
+    <p>Is the puzzle correct?</p>
+    <form method="dialog">
+      <button value="yes" onclick="solveAndShowPuzzle();">Yes</button>
+      <button value="no" onclick="resumePuzzleExtraction();">No</button>
+    </form>
+  </dialog>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/onnxruntime-web/dist/ort.min.js"></script>
-<script src="{% static 'DaveIsTheBest_base/sudoku_solver.js' %}"></script>
-<script async src="https://docs.opencv.org/4.7.0/opencv.js"></script>
 {% endblock content %}

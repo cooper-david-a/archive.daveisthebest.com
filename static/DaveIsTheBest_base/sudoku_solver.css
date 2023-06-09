@@ -1,10 +1,12 @@
 #videoIn {
+    display: none;
     border: solid black 1px;
 }
 
 #videoDisplay {
-    display: none;
+    display: inline-block;
     border: solid black 1px;
+    width: 100%;
 }
 
 #canvasPuzzle {

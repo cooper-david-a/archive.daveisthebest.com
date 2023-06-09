@@ -1,40 +1,90 @@
-const FPS = 2;
-const PUZZLE_SIZE = 396;
+const SPACE_SIZE = 44;
+const PUZZLE_SIZE = SPACE_SIZE * 9;
 const DIGIT_SIZE = 20;
+const MAX_PUZZLES = 100;
+
+let FPS = 10;
 let videoIn = document.getElementById("videoIn");
 let videoDisplay = document.getElementById("videoDisplay");
+
+videoIn.addEventListener('loadedmetadata', function () {
+    videoDisplay.width = videoIn.videoWidth;
+    videoDisplay.height = videoIn.videoHeight;
+});
+
+window.addEventListener('beforeunload',quit)
+
 let canvasPuzzle = document.getElementById("canvasPuzzle");
-let streaming = false;
+canvasPuzzle.width = PUZZLE_SIZE;
+canvasPuzzle.height = PUZZLE_SIZE;
+canvasPuzzle.addEventListener('click', finalizeInputPuzzle);
+
+let confidenceSpan = document.getElementById("confidence");
+
 let running = false;
+let onnxNet;
 
-navigator.mediaDevices.getUserMedia({ video: {facingMode:'environment'} })
-    .then(function (stream) {
-        videoIn.srcObject = stream;
-        videoIn.width = stream.getVideoTracks()[0].getSettings().width;
-        videoIn.height = stream.getVideoTracks()[0].getSettings().height;
-        videoIn.play();
-    })
-    .catch(function (err) {
-        console.log("An error occurred! " + err);
-    });
+let sudokuTemplate;
 
-function ready() {
-    document.getElementById('videoContainer').addEventListener('click',toggleRun);
-}
+let cap;
+let videoFrame;
+let hiddenView;
+let puzzleView;
 
-function toggleRun() {
-    if (running) stop();
-    if (!running) go();
-    running = !running;
-}
+let contours;
+let hierarchy;
+let color;
+let tempPolygon;
+let polygon;
 
-function go() {
-    try {     
-        streaming = true;
+let mask;
+let horizontalMask;
+let verticalMask;
+let horizontalStructuralElement;
+let verticalStructuralElement;
+let squareStructuralElement;
+
+let digits = [];
+let labels;
+let stats;
+let centroids;
+let digitRoi;
+
+let puzzle;
+let puzzles = [];
+let confidence;
+let minConfidence;
+
+
+
+async function ready() {
+    try {        
+
+        await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
+            .then(function (stream) {
+                videoIn.srcObject = stream;
+                videoIn.width = stream.getVideoTracks()[0].getSettings().width;
+                videoIn.height = stream.getVideoTracks()[0].getSettings().height;
+                videoIn.play();
+            })
+            .catch(function (err) {
+                console.log("An error occurred! " + err);
+            });
+        
+        await fetch('./static/DaveIsTheBest_base/digit_recognizer_1.onnx')
+            .then(response => response.arrayBuffer())
+            .then(buffer => {
+                model = new Uint8Array(buffer)
+                onnxNet = cv.readNetFromONNX1(model)
+                console.log('digit_recognizer loaded')
+            }).catch(e => {
+                console.log(e);
+            });
+        
         cap = new cv.VideoCapture(videoIn);
         videoFrame = new cv.Mat(videoIn.videoHeight, videoIn.videoWidth, cv.CV_8UC4);
         hiddenView = new cv.Mat(videoIn.clientHeight, videoIn.clientWidth, cv.CV_8UC1);
-        puzzleView = new cv.Mat(PUZZLE_SIZE, PUZZLE_SIZE, cv.CV_8UC4);        
+        puzzleView = new cv.Mat(PUZZLE_SIZE, PUZZLE_SIZE, cv.CV_8UC4);
 
         contours = new cv.MatVector();
         hierarchy = new cv.Mat();
@@ -53,56 +103,46 @@ function go() {
         labels = mask.clone();
         stats = new cv.Mat();
         centroids = new cv.Mat();
-        digitRoi = new cv.Mat(44, 44, cv.CV_8UC1);
 
-        videoIn.style.display = 'none';
-        videoDisplay.style.display = 'inline';
+        running = true;
         setTimeout(processVideo, 0);
-        return
-    } catch (err){
+
+    } catch (err) {
         console.log(err.message);
-        setTimeout(go, 100);
-        return
+        setTimeout(ready, 500);
     }
+} 
+
+function quit() {
+    try {
+        videoFrame.delete();
+        hiddenView.delete();
+        puzzleView.delete();
     
-}
-
-function stop() {
-    streaming = false;
-    cv.imshow('canvasPuzzle', puzzleView);
-
-    videoFrame.delete();
-    hiddenView.delete();
-    puzzleView.delete();
-
-    contours.delete();
-    hierarchy.delete();
-    tempPolygon.delete();
-    polygon.delete();
-
-    mask.delete();
-    horizontalMask.delete();
-    verticalMask.delete();
-    horizontalStructuralElement.delete();
-    verticalStructuralElement.delete();
-    squareStructuralElement.delete();
-
-    labels.delete();
-    stats.delete();
-    centroids.delete();
-    digitRoi.delete();
-
-    videoIn.style.display = 'inline';
-    videoDisplay.style.display = 'none';
+        contours.delete();
+        hierarchy.delete();
+        tempPolygon.delete();
+        polygon.delete();
     
-    puzzle = createPuzzle(digits, digitsPositions);
-    puzzle = solvePuzzle(puzzle);
-    drawPuzzle(puzzle);
+        mask.delete();
+        horizontalMask.delete();
+        verticalMask.delete();
+        horizontalStructuralElement.delete();
+        verticalStructuralElement.delete();
+        squareStructuralElement.delete();
+    
+        labels.delete();
+        stats.delete();
+        centroids.delete();
+        digitRoi.delete();
+    } catch (err) {
+        console.log(err);
+    }    
 }
 
 function processVideo() {
     try {
-        if (!streaming) return;
+        if (!running) return;
 
         let begin = Date.now();
 
@@ -114,43 +154,36 @@ function processVideo() {
         let indexOfLargestContour = findLargestContour();
         cv.approxPolyDP(contours.get(indexOfLargestContour), tempPolygon, 100, true);
         polygon.set(0, tempPolygon);
-        cv.drawContours(videoFrame, polygon, 0, color, 3, cv.LINE_8, hierarchy, 0);
 
         if (tempPolygon.rows == 4) {
-            isolatePuzzle();
-            extractDigits();
-            recognize_digits().then(nums => digits = Array.from(nums)).then(drawDigits).finally(x => {          
-                let delay = 1000 / FPS - (Date.now() - begin);
-                setTimeout(processVideo, delay);
-            })
-        } else {
-            let delay = 1000 / FPS - (Date.now() - begin);
-            setTimeout(processVideo, delay);
+            isolatePuzzleImage();
+            [puzzle, confidence] = extractPuzzle();
+            cv.imshow('canvasPuzzle', puzzleView);
+            drawPuzzle(puzzle);
+            [undefined, minConfidence] = indexOfMax(confidence.flat().map((x) => -x));
+            confidenceSpan.innerText = -Math.round(minConfidence*100);
         }
-            
+        
+        cv.drawContours(videoFrame, polygon, 0, color, 3, cv.LINE_8, hierarchy, 0);
         cv.imshow('videoDisplay', videoFrame);
-        cv.imshow('canvasPuzzle', puzzleView);
+
+        let delay = 1000 / FPS - (Date.now() - begin);
+        setTimeout(processVideo, delay);
 
     }catch (err) {
         console.log(err);
     }
-};
-
-function findLargestContour() {
-    let n = contours.size();
-    let indexOfLargestContour = 0;
-    let largestArea = 0;
-    for (let i = 0; i < n; i++){
-        let area = cv.contourArea(contours.get(i));
-        if (area > largestArea) {
-            largestArea = area;
-            indexOfLargestContour = i;            
-        }
-    }
-    return indexOfLargestContour
 }
 
-function isolatePuzzle() {    
+function finalizeInputPuzzle() {
+    running = !running;
+    if (!running) {
+        let confirmCorrectPuzzle = document.getElementById("confirmCorrectPuzzle");
+        confirmCorrectPuzzle.showModal();    
+    }
+}
+
+function isolatePuzzleImage() {    
     let cornerPositions = [0, 0, 0, PUZZLE_SIZE, PUZZLE_SIZE, PUZZLE_SIZE, PUZZLE_SIZE, 0];
     let corners = tempPolygon.data32S;
     let dx12 = corners[2] - corners[0];
@@ -167,7 +200,21 @@ function isolatePuzzle() {
     a.delete(); b.delete(); M.delete();    
 }
 
-function extractDigits() {
+function findLargestContour() {
+    let n = contours.size();
+    let indexOfLargestContour = 0;
+    let largestArea = 0;
+    for (let i = 0; i < n; i++){
+        let area = cv.contourArea(contours.get(i));
+        if (area > largestArea) {
+            largestArea = area;
+            indexOfLargestContour = i;            
+        }
+    }
+    return indexOfLargestContour
+}
+
+function extractPuzzle() {
     cv.threshold(hiddenView, hiddenView, 10, 255, cv.THRESH_BINARY);
 
     cv.erode(hiddenView, horizontalMask, horizontalStructuralElement, new cv.Point(-1, -1), 2);
@@ -186,228 +233,139 @@ function extractDigits() {
 
     let nblobs = cv.connectedComponentsWithStats(hiddenView, labels, stats, centroids, 8, cv.CV_16U);
 
-    digitsPixelData = [];
-    digitsPositions = [];
-    
+    var puzzle = new Array(9);
+    var confidence = new Array(9);
+    var mostProbablePuzzle = new Array(9);
+    for (let i = 0; i < 9; i++){
+        puzzle[i] = new Array(9).fill(0);
+        confidence[i] = new Array(9).fill(0);
+        mostProbablePuzzle[i] = new Array(9).fill(0);
+    }
+
+    digits = [];
     for (let i = 1; i < nblobs; i++) {
         let blobStats = stats.data32S.slice(5 * i, 5 * i + 5);
                 
         if (blobIsDigit(blobStats)) {
+            let digit = { value: 0, position: [0, 0], pixelData: {}, probabilities: [] }
             let digitRect = { x: blobStats[0], y: blobStats[1], width: blobStats[2], height: blobStats[3] }
             let digitCenter = { x: digitRect.x + digitRect.width / 2, y: digitRect.y + digitRect.height / 2 };
             digitRoi = hiddenView.roi(digitRect).clone();
             cv.resize(digitRoi, digitRoi, {width: DIGIT_SIZE, height: DIGIT_SIZE})
-            digitsPixelData = digitsPixelData.concat(Array.from(digitRoi.data));
-            digitsPositions.push([Math.round(digitCenter.y / 44 - .5), Math.round(digitCenter.x / 44 - .5)]);            
+            digit.pixelData = digitRoi.clone();
+            [digit.value, digit.maxProbability, digit.probabilities] = recognize_digit(digit);
+            digit.position = [Math.round(digitCenter.y / SPACE_SIZE - .5), Math.round(digitCenter.x / SPACE_SIZE - .5)];
+            puzzle[digit.position[0]][digit.position[1]] = digit.value;
+            digits.push(digit);
         }
     }
+
+    puzzles.push(puzzle);
+    if (puzzles.length > MAX_PUZZLES) puzzles.shift();
+
+    for (let i = 0; i < 9; i++){
+        for (let j = 0; j < 9; j++){
+            let pos_array = [];
+            puzzles.forEach((puzzle) => pos_array.push(puzzle[i][j]));
+            [mostProbableDigit, count] = getMode(pos_array);
+            mostProbablePuzzle[i][j] = mostProbableDigit;
+            confidence[i][j] = count / puzzles.length;
+        }
+    }
+
+    return [mostProbablePuzzle, confidence]
+    
 }
 
 function blobIsDigit(blobStats) {
     if (blobStats[4] > 80) {
         let blobCenter = [blobStats[0] + blobStats[2] / 2, blobStats[1] + blobStats[3] / 2];
-        let centerDistance = Math.sqrt(blobCenter.map(x => x % 44 - 22).reduce((s, val) => s + val * val,0));
+        let centerDistance = Math.sqrt(blobCenter.map(x => x % SPACE_SIZE - 22).reduce((s, val) => s + val * val,0));
         return centerDistance < 10;        
     }
     return false;
 }
 
-async function recognize_digits() {
-    let session = await ort.InferenceSession.create('./static/DaveIsTheBest_base/digit_recognizer.onnx');
-
-    try {
-        let tensorX = new ort.Tensor('float32', Float32Array.from(digitsPixelData), [digitsPositions.length, DIGIT_SIZE * DIGIT_SIZE])
-        let results = await session.run({ X: tensorX })
-        return results.label.data
-
+function recognize_digit(digit) {
+    try {        
+        let net_input = cv.matFromArray(1, 400, cv.CV_32FC1, digit.pixelData.data);
+        let probabilities = new cv.Mat.zeros(1,9,cv.CV_32FC1)
+        onnxNet.setInput(net_input);
+        probabilities = onnxNet.forward();
+        let [index, max] = indexOfMax(probabilities.data32F);
+        return [index + 1, max, Array.from(probabilities.data32F)];
     } catch (e) {
-        console.log(`failed to inference ONNX model: ${e}.`);
+        console.log(`digit recognition failed: ${e}.`);
     }
 }
 
-function drawDigits() {
-    ctx = canvasPuzzle.getContext('2d');
-    ctx.font = '20px Arial';
-    ctx.fillStyle = '#0000ff';
-    
-    for (let i = 0; i < digits.length; i++){
-        ctx.fillText(digits[i], (digitsPositions[i][1] + 1) * 44 - 10, digitsPositions[i][0] * 44 + 30)        
-    }
-}
+function solveSudoku(board) {
+    const emptySpot = findEmptySpot(board);
 
-function createPuzzle(digits, digitsPositions) {
-    let puzzle = {
-        grid: Array(9).fill().map(x => Array(9).fill('123456789')),
-        rowTracker: Array(9).fill('123456789'),
-        colTracker: Array(9).fill('123456789'),
-        blockTracker: Array(3).fill().map(x => Array(3).fill('123456789')),
-        valid: true
-    };
-
-    for (let i = 0; i < digits.length; i++) {
-        row = digitsPositions[i][0];
-        col = digitsPositions[i][1];
-        puzzle.grid[row][col] = String(digits[i]);
-        eliminate(puzzle, digits[i], row, col);
+    if (!emptySpot) {
+        // Base case: All spots filled, puzzle solved
+        return true;
     }
 
-    return puzzle
-}
+    const [row, col] = emptySpot;
 
-function eliminate(puzzle, num, row, col) {
-    for (let i = 0; i < 9; i++) {
-        puzzle.grid[i][col] = (i == row) ? puzzle.grid[i][col] : puzzle.grid[i][col].replace(num, '');
-        if (puzzle.grid[i][col] == '') {
-            puzzle.valid = false;
-            return;
-        }
-    }
+    for (let num = 1; num <= 9; num++) {
+        if (isValid(board, row, col, num)) {
+            // Place the number in the empty spot
+            board[row][col] = num;
 
-    for (let j = 0; j < 9; j++) {
-        puzzle.grid[row][j] = (j == col) ? puzzle.grid[row][j] : puzzle.grid[row][j].replace(num, '');
-        if (puzzle.grid[row][j] == '') {
-            puzzle.valid = false;
-            return;
-        }
-    }
-
-    let block_row = Math.floor(row / 3);
-    let block_col = Math.floor(col / 3);
-
-    for (let i = 0; i < 3; i++){
-        for (let j = 0; j < 3; j++){
-            puzzle.grid[block_row * 3 + i][block_col * 3 + j] =
-                ((block_col * 3 + j == col) && (block_row * 3 + i == row)) ?
-                    puzzle.grid[block_row * 3 + i][block_col * 3 + j] :
-                    puzzle.grid[block_row * 3 + i][block_col * 3 + j].replace(num, '');
-            
-            if (puzzle.grid[block_row * 3 + i][block_col * 3 + j] == '') {
-                puzzle.valid = false;
-                return;
+            // Recursively solve the updated board
+            if (solveSudoku(board)) {
+                return true;
             }
+
+            // Undo the placement and try the next number
+            board[row][col] = 0;
         }
     }
 
-    puzzle.rowTracker[row] = puzzle.rowTracker[row].replace(num, '');
-    puzzle.colTracker[col] = puzzle.colTracker[col].replace(num, '');
-    puzzle.blockTracker[block_row][block_col] = puzzle.blockTracker[block_row][block_col].replace(num, '');
-
+    // No valid number found, backtrack
+    return false;
 }
 
-function removeSingleBlinds(puzzle) {
-    
-    let progressing = true;
-
-    while (progressing) {
-
-        progressing = false;
-
-        for (let row = 0; row < 9; row++) {
-            for (num of puzzle.rowTracker[row]) {
-                let col = findOnlyNumInRow(puzzle, row, num);
-                if (col>=0) {
-                    puzzle.grid[row][col] = num;
-                    eliminate(puzzle, num, row, col);
-                    if (!puzzle.valid) return;
-                    progressing = true;
-                }
-            }
-        }
-
+function findEmptySpot(board) {
+    for (let row = 0; row < 9; row++) {
         for (let col = 0; col < 9; col++) {
-            for (num of puzzle.colTracker[col]) {
-                let row = findOnlyNumInCol(puzzle, col, num);
-                if (row>=0) {
-                    puzzle.grid[row][col] = num;
-                    eliminate(puzzle, num, row, col);
-                    if (!puzzle.valid) return;
-                    progressing = true;
-                }
+            if (board[row][col] === 0) {
+                return [row, col];
             }
         }
-        
-        for (let block_row = 0; block_row < 3; block_row++) {
-            for (let block_col = 0; block_col < 3; block_col++) {
-                for (num of puzzle.blockTracker[block_row][block_col]) {
-                    let [row, col] = findOnlyNumInBlock(puzzle, block_row, block_col, num);
-                    if (row>=0 && col>=0) {
-                        puzzle.grid[row][col] = num;
-                        eliminate(puzzle, num, row, col);
-                        if (!puzzle.valid) return;
-                        progressing = true;
-                    }
-                }
-            }
-        }
-
-        if (solved(puzzle)) break;
-
     }
-
+    return null; // All spots filled
 }
 
-function findOnlyNumInRow(puzzle, row, num) {
-    let col = -1;
-    for (let j = 0; j < 9; j++) {
-        if (puzzle.grid[row][j].includes(num)) {
-            if (col>=0) return -1;
-            col = j;
-        }
-    }
-    return col;
-}
-
-function findOnlyNumInCol(puzzle, col, num) {
-    let row = -1;
+function isValid(board, row, col, num) {
+    // Check if the number already exists in the same row
     for (let i = 0; i < 9; i++) {
-        if (puzzle.grid[i][col].includes(num)) {
-            if (row>=0) return -1;
-            row = i;
+        if (board[row][i] === num) {
+            return false;
         }
     }
-    return row;
-}
 
-function findOnlyNumInBlock(puzzle, block_row, block_col, num) {
-    let row = -1;
-    let col = -1;
-    for (let i = block_row * 3; i < block_row * 3 + 3; i++) {
-        for (let j = block_col * 3; j < block_col * 3 + 3; j++) {
-            if (puzzle.grid[i][j].includes(num)) {
-                if (row>=0 || col>=0) return [-1,-1];
-                row = i;
-                col = j;
+    // Check if the number already exists in the same column
+    for (let i = 0; i < 9; i++) {
+        if (board[i][col] === num) {
+            return false;
+        }
+    }
+
+    // Check if the number already exists in the same 3x3 box
+    const boxRow = Math.floor(row / 3) * 3;
+    const boxCol = Math.floor(col / 3) * 3;
+    for (let i = 0; i < 3; i++) {
+        for (let j = 0; j < 3; j++) {
+            if (board[boxRow + i][boxCol + j] === num) {
+                return false;
             }
         }
     }
 
-    return [row, col];
-}
-
-function solved(puzzle) {
-    return puzzle.rowTracker.reduce((tot, val) => (tot + val), '').length == 0;
-}
-
-function solvePuzzle(puzzle) {
-        
-    removeSingleBlinds(puzzle);
-    let testPuzzle = JSON.parse(JSON.stringify(puzzle));
-    
-    for (let i = 0; i < 9; i++){
-        for (let j = 0; j < 9; j++){
-            if (testPuzzle.grid[i][j].length > 1) {
-                for (num of testPuzzle.grid[i][j]) {
-                    testPuzzle.grid[i][j] = num;
-                    eliminate(testPuzzle, num, i, j);
-                    if (testPuzzle.valid) {
-                        solvePuzzle(testPuzzle);
-                    } else testPuzzle = JSON.parse(JSON.stringify(puzzle));
-                    if (solved(testPuzzle)) return testPuzzle;
-                }
-            }
-        }
-    }
-    return testPuzzle;
+    return true; // Number is valid at this spot
 }
 
 function drawPuzzle(puzzle) {
@@ -417,7 +375,43 @@ function drawPuzzle(puzzle) {
 
     for (let i = 0; i < 9; i++) {
         for (let j = 0; j < 9; j++){
-            ctx.fillText(puzzle.grid[j][i], (i+1) * 44 - 15, j * 44 + 40);
+            if (puzzle[j][i] > 0) ctx.fillText(puzzle[j][i], (i+1) * SPACE_SIZE - 15, j * SPACE_SIZE + 40);
         }
     }
+}
+
+function indexOfMax(arr) {
+    var max = arr[0];
+    var maxIndex = 0;
+
+    for (var i = 1; i < arr.length; i++) {
+        if (arr[i] > max) {
+            maxIndex = i;
+            max = arr[i];
+        }
+    }
+
+    return [maxIndex, max];
+}
+
+function getMode(arr) {
+    let counts = new Array(10).fill(0);
+    arr.forEach((value) => counts[value] += 1 );
+    [mode, count] = indexOfMax(counts);
+    return [mode, count];    
+}
+
+function solveAndShowPuzzle() {
+    let solved = solveSudoku(puzzle);
+    if (solved) {
+        cv.imshow('canvasPuzzle', puzzleView);
+        drawPuzzle(puzzle);        
+    } else {
+        alert('No solution found.  Check the input puzzle.')
+    }
+}
+
+function resumePuzzleExtraction() {
+    running = true;
+    processVideo();
 }
