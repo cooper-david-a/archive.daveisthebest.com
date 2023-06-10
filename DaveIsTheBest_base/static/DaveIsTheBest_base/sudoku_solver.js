@@ -158,8 +158,8 @@ function processVideo() {
         if (tempPolygon.rows == 4) {
             isolatePuzzleImage();
             [puzzle, confidence] = extractPuzzle();
-            //cv.imshow('canvasPuzzle', puzzleView);
-            cv.imshow('canvasPuzzle', hiddenView);
+            cv.imshow('canvasPuzzle', puzzleView);
+            //cv.imshow('canvasPuzzle', hiddenView);
             drawPuzzle(puzzle);
             [undefined, minConfidence] = indexOfMax(confidence.flat().map((x) => -x));
             confidenceSpan.innerText = -Math.round(minConfidence*100);
