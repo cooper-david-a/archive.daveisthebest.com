@@ -105,7 +105,7 @@ async function ready() {
         centroids = new cv.Mat();
 
         running = true;
-        setTimeout(processVideo, 0);
+        setTimeout(processVideo, 100);
 
     } catch (err) {
         console.log(err.message);
