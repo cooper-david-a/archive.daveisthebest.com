@@ -158,7 +158,8 @@ function processVideo() {
         if (tempPolygon.rows == 4) {
             isolatePuzzleImage();
             [puzzle, confidence] = extractPuzzle();
-            cv.imshow('canvasPuzzle', puzzleView);
+            //cv.imshow('canvasPuzzle', puzzleView);
+            cv.imshow('canvasPuzzle', hiddenView);
             drawPuzzle(puzzle);
             [undefined, minConfidence] = indexOfMax(confidence.flat().map((x) => -x));
             confidenceSpan.innerText = -Math.round(minConfidence*100);
@@ -278,7 +279,7 @@ function extractPuzzle() {
 }
 
 function blobIsDigit(blobStats) {
-    if (blobStats[4] > 80) {
+    if (blobStats[4] > 50) {
         let blobCenter = [blobStats[0] + blobStats[2] / 2, blobStats[1] + blobStats[3] / 2];
         let centerDistance = Math.sqrt(blobCenter.map(x => x % SPACE_SIZE - 22).reduce((s, val) => s + val * val,0));
         return centerDistance < 10;        
