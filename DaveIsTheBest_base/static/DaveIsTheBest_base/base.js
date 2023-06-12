@@ -35,7 +35,7 @@ async function getComments() {
   let latestComment = Number(Object.keys(comments).reverse()[0]);
   if (!latestComment) latestComment = 0;
 
-  await fetch(window.location.origin + `/comments/?latest=${latestComment}`, { method: 'GET' })
+  await fetch(window.location.origin + `/comments/?latest=${latestComment}`, { method: 'GET' , cache: 'no-cache'})
     .then((res) => res.json())
     .then((data) => {
       let newEntries = Object.entries(data.comments);
