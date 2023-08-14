@@ -6,7 +6,6 @@ const configuration = {
     ]
 }
 
-const csrftoken = getCookie('csrftoken');
 let peerConnection = new RTCPeerConnection(configuration);
 let dataChannel;
 let localStream;
