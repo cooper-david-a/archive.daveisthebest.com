@@ -17,7 +17,7 @@ parser = RawConfigParser(allow_no_value=True)
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-LOCAL_SETTINGS_FILE = BASE_DIR.parent / 'DaveIsTheBest_settings.ini'
+LOCAL_SETTINGS_FILE = BASE_DIR.parent / 'archive_DaveIsTheBest_settings.ini'
 parser.read(LOCAL_SETTINGS_FILE)
 
 
@@ -30,6 +30,7 @@ SECRET_KEY = parser.get('secrets','SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = parser.getboolean('debug','DEBUG')
+PRODUCTION = parser.getboolean("production","PRODUCTION")
 
 ALLOWED_HOSTS = parser.get('hosts','ALLOWED_HOSTS').split(',')
 
@@ -147,11 +148,19 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
-STATIC_URL = '/static/'
-STATIC_ROOT = BASE_DIR / 'static'
+if PRODUCTION:
+    STATIC_URL = parser.get("STATIC","STATIC_URL")
+    MEDIA_URL = parser.get("MEDIA", "MEDIA_URL")
+    MEDIA_ROOT = parser.get("MEDIA", "MEDIA_ROOT")
+else:
+    STATIC_URL = "static/"
+    MEDIA_URL = "media/"
+    MEDIA_ROOT = BASE_DIR / "media"
 
-MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'
+STATIC_ROOT = BASE_DIR / "static"
+
+CORS_ALLOWED_ORIGINS = parser.get("CORS", "CORS_ALLOWED_ORIGINS").split(",")
+CSRF_TRUSTED_ORIGINS = parser.get("CSRF", "CSRF_TRUSTED_ORIGINS").split(",")
 
 EMAIL_BACKEND = parser.get('email','EMAIL_BACKEND')
 DEFAULT_FROM_EMAIL = parser.get('email','DEFAULT_FROM_EMAIL')

@@ -71,7 +71,7 @@ async function ready() {
                 console.log("An error occurred! " + err);
             });
         
-        await fetch('./static/DaveIsTheBest_base/digit_recognizer_1.onnx')
+        await fetch('https://daveisthebest.com/api-static-files/archive/static/DaveIsTheBest_base/digit_recognizer_1.onnx')
             .then(response => response.arrayBuffer())
             .then(buffer => {
                 model = new Uint8Array(buffer)
